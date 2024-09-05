@@ -28,26 +28,30 @@ public static class DbContextConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder AddDbContext<TDbContext>(
         this IConfigurationBuilder builder,
-        IServiceCollection services
+        IServiceCollection services,
+        TimeSpan refreshPeriod
         ) where TDbContext : DbContext
     {
         return builder.AddDbContext<TDbContext>(
             services,
-            setSelector: ctx => ctx.Set<ConfigurationRecord>()
+            setSelector: ctx => ctx.Set<ConfigurationRecord>(),
+            refreshPeriod: refreshPeriod
         );
     }
     
     public static IConfigurationBuilder AddDbContext<TDbContext>(
         this IConfigurationBuilder builder,
         IServiceCollection services,
-        Func<TDbContext, DbSet<ConfigurationRecord>> setSelector
+        Func<TDbContext, DbSet<ConfigurationRecord>> setSelector,
+        TimeSpan refreshPeriod
     ) where TDbContext : DbContext
     {
         return builder.AddDbContext(
             services,
             setSelector,
             keySelector: r => r.Id,
-            valueSelector: r => r.Value
+            valueSelector: r => r.Value,
+            refreshPeriod
         );
     }
     
@@ -56,7 +60,8 @@ public static class DbContextConfigurationBuilderExtensions
         IServiceCollection services,
         Func<TDbContext, DbSet<TRecord>> setAccessor,
         Func<TRecord, string> keySelector,
-        Func<TRecord, string?> valueSelector
+        Func<TRecord, string?> valueSelector,
+        TimeSpan refreshPeriod
         
     ) where TDbContext : DbContext where TRecord : class
     {
@@ -68,7 +73,7 @@ public static class DbContextConfigurationBuilderExtensions
                 keySelector,
                 valueSelector
             ),
-            refreshPeriod: TimeSpan.FromMinutes(5)
+            refreshPeriod: refreshPeriod
         );
     }
 }
