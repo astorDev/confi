@@ -5,14 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Confi;
 
 public class DbContextConfigurationReader<TDbContext, TRecord>(IDbContextFactory<TDbContext> dbFactory,
-    Func<TDbContext, DbSet<TRecord>> setAccessor, 
+    Func<TDbContext, DbSet<TRecord>> setSelector, 
     Func<TRecord, string> keySelector,
     Func<TRecord, string?> valueSelector) : IConfigurationReader where TDbContext : DbContext where TRecord : class
 {
     public async Task<IDictionary<string, string?>> ReadAsync()
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        var set = setAccessor(db);
+        var set = setSelector(db);
         var records = await set.ToArrayAsync();
         return records.ToDictionary(keySelector, valueSelector);
     }
