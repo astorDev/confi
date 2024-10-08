@@ -3,6 +3,7 @@ on:
     paths:
       - 'dotnet/core/**'
       - '.github/workflows/core-nuget.yml'
+  workflow_dispatch:
 
 jobs:
   publish:
