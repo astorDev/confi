@@ -4,6 +4,8 @@
 
 Sometimes, a development team may want to have a configuration variable individual for every developer. There's no better tool to achieve that than `.env` files. However, .NET applications do not include this configuration source by default. Gladly, that's easy to fix. Let's do just that!
 
+![](thumb.png)
+
 ## Preparing the Playground
 
 > You can jump straight to the [TLDR](#tldr) in the end if you don't need a complete guide
