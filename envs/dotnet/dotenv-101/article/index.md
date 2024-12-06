@@ -2,7 +2,7 @@
 
 > Connecting the Dots
 
-Sometimes development team may want to have a configuration value individual for every developer. There's no better tool to achieve that than `.env` files. However, .NET applications does not include this configuration source by default. Gladly, that's easy to fix. Let's do just that!
+Sometimes, a development team may want to have a configuration variable individual for every developer. There's no better tool to achieve that than `.env` files. However, .NET applications do not include this configuration source by default. Gladly, that's easy to fix. Let's do just that!
 
 ## 
 
@@ -21,7 +21,7 @@ dotnet publish && cd bin/Release/net9.0/publish && dotnet DotEnvs.Playground.dll
 
 ## TLDR;
 
-`.env` files are one of the most fundamental sources of configuration. .NET doesn't include it by default, sill using `dotenv.net` nuget-package we can easily add the source to our app. Just make sure not to forget:
+`.env` files are one of the most fundamental sources of configuration. .NET doesn't include it by default, sill using the `dotenv.net` nuget package we can easily add the source to our app. Just make sure not to forget:
 
 1. Load environment variables from the file:
 
@@ -31,7 +31,7 @@ using dotenv.net;
 DotEnv.Load();
 ``` 
 
-2. Include the file in the publish directory. (in case it's not only use for local debugging)
+2. Include the file in the publish directory. (in case it's not only used for local debugging)
 
 ```xml
 <Content Include=".env" CopyToPublishDirectory="Always"/>
