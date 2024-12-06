@@ -55,7 +55,7 @@ dotnet publish && cd bin/Release/net9.0/publish && dotnet DotEnvs.Playground.dll
 
 `<Content Include=".env" CopyToPublishDirectory="Always"/>`
 
-> It's typically adviced to create another `ItemGroup` for nesting `Content`, but I find that quite redundant and prefer keeping my project file concise over making it. But feel free to pick your poison 🙂
+> It's typically advised to create another `ItemGroup` for nesting `Content`, but I find that quite redundant and prefer keeping my project file concise over making it. But feel free to pick your poison 🙂
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
