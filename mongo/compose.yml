@@ -1,0 +1,12 @@
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    command: mongod --replSet rs0
+    volumes:
+      - ./init.js:/docker-entrypoint-initdb.d/init.js
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
