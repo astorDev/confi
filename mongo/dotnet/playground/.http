@@ -1,0 +1,6 @@
+PUT http://localhost:5051/config
+
+{
+    "name" : "Egor",
+    "age" : 29
+}
