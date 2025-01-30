@@ -53,7 +53,7 @@ public sealed class CustomConfiguration
         }, null);
 
         Console.WriteLine($"Current Count: {config[Counting.Key]}");
-        await Task.Delay(400);
+        await Task.Delay(150);
         Console.WriteLine($"Current Count: {config[Counting.Key]}");
     }
 
