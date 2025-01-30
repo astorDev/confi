@@ -159,7 +159,6 @@ Console.WriteLine($"Current Count: {config[Counting.Key]}");
 ```
 
 ```text
-
  Current Count: 2
  Changed... Current Count: 3
  Changed... Current Count: 4
