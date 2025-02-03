@@ -2,6 +2,8 @@
 
 > A Simple Example of an ASP .NET Core 9 Configuration Provider with Periodic Updates
 
+![](thumb.png)
+
 ASP .NET Core apps come with an [impressive set](https://medium.com/@vosarat1995/net-configuration-architecture-getting-started-87526b9fbc68) of built-in configuration providers. Still, sometimes it's just not enough. Gladly, the .NET configuration system is versatile and allows us to implement our own custom configuration provider. So, how about we do just that?
 
 ## Creating the Simplest Provider Possible
