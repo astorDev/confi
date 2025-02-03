@@ -6,7 +6,7 @@ ASP .NET Core apps come with an [impressive set](https://medium.com/@vosarat1995
 
 ## Creating the Simplest Provider Possible
 
-First thing first, we need to make sure we have all the required packages installed. In a Web template the package we need is already installed, but in case of a library, test, or console application we'll need to run the following:
+First thing first, we need to make sure we have all the required packages installed. In a Web template, the package we need is already installed, but in the case of a library, test, or console application we'll need to run the following:
 
 > This assumes you are in a folder containing a .NET project. The easiest way to create one is by running `dotnet new console`.
 
@@ -14,7 +14,7 @@ First thing first, we need to make sure we have all the required packages instal
 dotnet add package Microsoft.Extensions.Configuration
 ```
 
-We'll start with a very basic example - a provider incrementing `Counter` configuration value. We'll need the configuration value key:
+We'll start with a very basic example - a provider incrementing the `Counter` configuration value. We'll need the configuration value key:
 
 ```cs
 public const string Key = "Counter";
@@ -28,7 +28,7 @@ public class Provider : ConfigurationProvider {
 }
 ```
 
-Finally, to be able to inject our provider to the configuration system we'll need a `IConfigurationSource`, that will create the provider:
+Finally, to be able to inject our provider into the configuration system we'll need an `IConfigurationSource`, that will create the provider:
 
 ```cs
 public class Source : IConfigurationSource {
@@ -75,13 +75,13 @@ This is how we can create a very basic custom configuration provider in .NET. Bu
 
 As of now, our `Counter` doesn't really count anything. To fix that, we'll need a background timer triggering the update. Let's install a helper package for that:
 
-> I've written a dedicated [article about timers in .NET](https://medium.com/@vosarat1995/net-timers-all-you-need-to-know-d020c73b63a4), that investigates various ways we can use .NET timers. The article also explains how exactly the package below works. You can check it out, but the code should be pretty self-explainatory
+> I've written a dedicated [article about timers in .NET](https://medium.com/@vosarat1995/net-timers-all-you-need-to-know-d020c73b63a4), that investigates various ways we can use .NET timers. The article also explains how exactly the package below works. You can check it out, but the code should be pretty self-explanatory
 
 ```sh
 dotnet add package Backi.Timers
 ```
 
-Now, let's define a proper logic of assigning the timer, which we'll assing `0` first time the loading is triggered and increment existing value by `1` if our key is already present:
+Now, let's define a proper logic of assigning the timer, which we'll assign `0` the first time the loading is triggered and increment the existing value by `1` if our key is already present:
 
 ```cs
 public override void Load() {
@@ -93,7 +93,7 @@ public override void Load() {
 }
 ```
 
-We'll need to setup a timer running every one-tenth of a second, executing the `Load` method and writing a possibly occurred exception to the console:
+We'll need to set a timer running every one-tenth of a second, executing the `Load` method, and writing a possibly occurred exception to the console:
 
 ```cs
 SafeTimer.RunNowAndPeriodically(
@@ -103,7 +103,7 @@ SafeTimer.RunNowAndPeriodically(
 );
 ```
 
-We'll start the timer from our provider constructor. Here's how our provider should look like after the update:
+We'll start the timer from our provider constructor. Here's what our provider should look like after the update:
 
 ```cs
 public class Provider : ConfigurationProvider {
@@ -129,7 +129,7 @@ If we'll run the code right now we will get the same result as before.
 Current Count: 1
 ```
 
-Let's update the executing code by asking for current configuration value 150 milliseconds after the first update:
+Let's update the executing code by asking for the current configuration value 150 milliseconds after the first update:
 
 ```cs
 Console.WriteLine($"Current Count: {config[Counting.Key]}");
@@ -144,11 +144,11 @@ Current Count: 1
 Current Count: 3
 ```
 
-We have implemented a proper `Counting` configuration provider, that updates it's value once in a while. Still, there's one thing we need to do in order to make our `ConfigurationProvider` feature-complete. Let's do it in the next section!
+We have implemented a proper `Counting` configuration provider, that updates its value once in a while. Still, there's one thing we need to do in order to make our `ConfigurationProvider` feature complete. Let's do it in the next section!
 
 ## Notifying & Listening Configuration Changes
 
-One of the coolest parts about .NET Configuration system is its ability to work with dynamic configuration. Configuration sources may update their value on the go and the system allows us to know about such updates.
+One of the coolest parts about the .NET Configuration system is its ability to work with dynamic configuration. Configuration sources may update their value on the go and the system allows us to know about such updates.
 
 Here's how we can implement the listening part:
 
@@ -187,9 +187,9 @@ Current Count: 1
 Current Count: 5
 ```
 
-As you may see, there's not `Changed...` message printed. That's because we have notified the system about the updates. Gladly, that's very easy to do - we'll just need to call the `OnReload` method we inherited from the `ConfigurationProvider`.
+As you may see, there's no `Changed...` message printed. That's because we have notified the system about the updates. Gladly, that's very easy to do - we'll just need to call the `OnReload` method we inherited from the `ConfigurationProvider`.
 
-We update our configuration value every time the `Load` method called, therefore after updating the value we should notify about the fact that changes have happened. Here's how our updated `Load` method should look like:
+We update our configuration value every time the `Load` method is called, therefore after updating the value, we should notify about the fact that changes have happened. Here's how our updated `Load` method should look like:
 
 ```cs
 public override void Load() {
@@ -211,7 +211,7 @@ Changed... Current Count: 3
 Current Count: 5
 ```
 
-Surprisingly, the `Changed...` message was printed only once. But there's nothing wrong with our provider. This is happening due to the way configuration reload token works - after an update the token seem to be "used" and don't notify about following changes.
+Surprisingly, the `Changed...` message was printed only once. But there's nothing wrong with our provider. This is happening due to the way the configuration reload token works - after an update, the token seems to be "used" and doesn't notify about the following changes.
 
 To do a proper subscription we'll need to get a new reload token and register a new callback every time the current callback has happened. We can do it via recursion like that:
 
@@ -238,7 +238,7 @@ await Task.Delay(400);
 Console.WriteLine($"Current Count: {config[Counting.Key]}");
 ```
 
-And after running it we should see every update printed to the console:
+After running it we should see every update printed to the console:
 
 ```text
 Current Count: 2
