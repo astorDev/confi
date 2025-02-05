@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.BackgroundStore.Playg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.CustomProvider.Tests", "providers\dotnet\custom\tests\Confi.CustomProvider.Tests.csproj", "{BC195411-1300-4677-B33C-5C69F1002CD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.BackgroundStore", "providers\dotnet\background\lib\Confi.BackgroundStore.csproj", "{96444844-1CAD-48AB-80B7-BAA85353FA60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{BC195411-1300-4677-B33C-5C69F1002CD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC195411-1300-4677-B33C-5C69F1002CD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC195411-1300-4677-B33C-5C69F1002CD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,5 +61,6 @@ Global
 		{C2A92D58-9EFB-4287-9666-0C09F66ADAE2} = {78A1B7E0-50DF-410D-9CFF-6F57D121C214}
 		{BC195411-1300-4677-B33C-5C69F1002CD9} = {8990299B-79E9-4DC2-9870-70F998F2F1AE}
 		{B83F1FED-5600-469D-928E-7402EEB77822} = {8990299B-79E9-4DC2-9870-70F998F2F1AE}
+		{96444844-1CAD-48AB-80B7-BAA85353FA60} = {8990299B-79E9-4DC2-9870-70F998F2F1AE}
 	EndGlobalSection
 EndGlobal
