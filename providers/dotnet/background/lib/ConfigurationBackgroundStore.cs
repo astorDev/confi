@@ -96,6 +96,16 @@ public static class AppBuildingExtensions
         return configuration.Add(new ConfigurationBackgroundStore.Source(store));
     }
 
+    public static IConfigurationBuilder AddBackgroundStore(this IConfigurationBuilder configuration)
+    {
+        return configuration.AddBackgroundStore(ConfigurationBackgroundStore.Instance);
+    }
+
+    public static IConfigurationBuilder AddBackgroundStore(this IConfigurationBuilder configuration, string key)
+    {
+        return configuration.AddBackgroundStore(ConfigurationBackgroundStore.GetInstance(key));
+    }
+
     public static IServiceCollection AddBackgroundConfigurationStores(this IServiceCollection services)
     {
         services.AddSingleton(ConfigurationBackgroundStore.Instance);
