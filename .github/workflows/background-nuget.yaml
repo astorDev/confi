@@ -1,0 +1,16 @@
+on:
+  push:
+    paths:
+      - 'providers/dotnet/background/lib/**'
+      - '.github/workflows/background-nuget.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Pack & Publish nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/nuget@main
+        with:
+          project: providers/dotnet/background/lib/Confi.BackgroundStore
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
