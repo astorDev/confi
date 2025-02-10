@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Confi.BackgroundStore" Version="2025.102.106.2" />
     <PackageReference Include="MongoDb.Driver" Version="3.1.0" />
+    <PackageReference Include="Persic.Mongo" Version="2025.101.127.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\lib\Confi.Mongo.csproj" />
   </ItemGroup>
 
 </Project>

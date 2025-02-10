@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.CustomProvider.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.BackgroundStore", "providers\dotnet\background\lib\Confi.BackgroundStore.csproj", "{96444844-1CAD-48AB-80B7-BAA85353FA60}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotnet", "dotnet", "{989E1FB4-8E0B-403A-8A9C-0DB84B967EE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Mongo.Tests", "mongo\dotnet\tests\Confi.Mongo.Tests.csproj", "{C5A1840F-6E9F-42EA-880F-73EC68E44A48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,10 @@ Global
 		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96444844-1CAD-48AB-80B7-BAA85353FA60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A1840F-6E9F-42EA-880F-73EC68E44A48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A1840F-6E9F-42EA-880F-73EC68E44A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A1840F-6E9F-42EA-880F-73EC68E44A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A1840F-6E9F-42EA-880F-73EC68E44A48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,5 +70,7 @@ Global
 		{BC195411-1300-4677-B33C-5C69F1002CD9} = {8990299B-79E9-4DC2-9870-70F998F2F1AE}
 		{B83F1FED-5600-469D-928E-7402EEB77822} = {8990299B-79E9-4DC2-9870-70F998F2F1AE}
 		{96444844-1CAD-48AB-80B7-BAA85353FA60} = {8990299B-79E9-4DC2-9870-70F998F2F1AE}
+		{989E1FB4-8E0B-403A-8A9C-0DB84B967EE9} = {78A1B7E0-50DF-410D-9CFF-6F57D121C214}
+		{C5A1840F-6E9F-42EA-880F-73EC68E44A48} = {989E1FB4-8E0B-403A-8A9C-0DB84B967EE9}
 	EndGlobalSection
 EndGlobal

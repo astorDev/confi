@@ -1,6 +1,18 @@
-PUT http://localhost:5051/config
+PUT http://localhost:5051/simple/config
 
 {
     "name" : "Egor",
-    "age" : 29
+    "age" : {{ $randomInt 25 30 }}
+}
+
+###
+PUT http://localhost:5051/toggles/config
+
+{
+    "featureManagement" : {
+        "featureA" : "enabled",
+        "featureB" : {
+            "percentage" : {{ $randomInt 1 99 }}
+        }
+    }
 }
