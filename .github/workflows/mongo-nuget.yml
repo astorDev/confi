@@ -1,0 +1,16 @@
+on:
+  push:
+    paths:
+      - 'mongo/dotnet/lib/**'
+      - '.github/workflows/mongo-nuget.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Pack & Publish nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/nuget@main
+        with:
+          project: mongo/dotnet/lib/Confi.Mongo
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
