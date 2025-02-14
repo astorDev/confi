@@ -14,7 +14,7 @@ builder.Services.AddMongo("mongodb://localhost:27017/?replicaSet=rs0", "confi-pl
     .AddCollection<ConfigRecord>("configurations");
 
 builder.Services.AddBackgroundConfigurationStores();
-builder.Services.AddMongoBackgroundConfigurationLoader("simple");
+builder.Services.AddMongoBackgroundConfigurationLoader("simple", MongoLoadingMode.LongPolling);
 builder.Services.AddMongoBackgroundConfigurationLoader("toggles");
 
 var app = builder.Build();

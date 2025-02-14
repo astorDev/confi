@@ -6,7 +6,3 @@ services:
     command: mongod --replSet rs0
     volumes:
       - ./init.js:/docker-entrypoint-initdb.d/init.js
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
