@@ -1,0 +1,3 @@
+## Confi Manager
+
+Confi Manager allows distributed configuration editing and syncronization. Manager accepts configuration JSON scheme from nodes, and provides an editor for an admin. When the configuration is changed it updates the value. Nodes periodically read current configuration and update it. Nodes also sends their full current configuration to the Manager. The manager compares current nodes configuration with the target configuration and determines nodes status, shown in the UI
