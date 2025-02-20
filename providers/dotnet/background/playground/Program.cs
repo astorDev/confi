@@ -2,8 +2,15 @@ using Confi;
 //using V1;
 using V3;
 
+// v0:
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
+
+builder.Configuration.AddConfigurationStore(ConfigurationStore.Instance);
+
+builder.Services.AddSingleton(ConfigurationStore.Instance);
+
+builder.Services.AddHostedService<V1.Counting.BackgroundService>();
 
 // v1:
 
@@ -24,8 +31,8 @@ builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
 // v3:
 
-builder.AddBackgroundConfiguration<Counting.BackgroundService>(Counting.Key);
-builder.AddBackgroundConfiguration<EnvironmentShuffling.BackgroundService>(EnvironmentShuffling.Key);
+// builder.AddBackgroundConfiguration<Counting.BackgroundService>(Counting.Key);
+// builder.AddBackgroundConfiguration<EnvironmentShuffling.BackgroundService>(EnvironmentShuffling.Key);
 
 var app = builder.Build();
 

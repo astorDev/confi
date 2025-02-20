@@ -1,11 +1,3 @@
-# Configuration Provider in .NET Based on Background Service
-
-> Connecting ASP .NET Core Configuration System with Dependency Injection enabled `IHostedService`
-
-.NET provides a versatile configuration framework, allowing us to [implement a custom configuration provider](https://medium.com/@vosarat1995/custom-configuration-provider-in-net-step-by-step-guide-3d8a3a8f7203). Most of the times, the provider's goal is to read configuration data from some source in the background. In the meantime, ASP .NET Core provides us with a simple way to enable a DI-based background process by injecting an `IHostedService` into our DI container. However, there is no built-in way to connect those two. Gladly, there is a (slightly tricky) way to do it - let me show you!
-
-> Or jump straight to the [TLDR](#tldr) for spoilers 😉 
-
 ## TLDR;
 
 We've found a way to connect `IHostedService` with the Configuration system using the good old Singleton. We've also made a small system around it to make it seamless and versatile. To not make this on your own you can just use the following package:
@@ -31,4 +23,3 @@ builder.Services.AddHostedService<EnvironmentShuffling.BackgroundService>();
 The source code for this article can be found [here on github](https://github.com/astorDev/confi/tree/main/providers/dotnet/background/playground). This article, as well as the underlying library, is part of the [project, called Confi](https://github.com/astorDev/confi) - don't hesitate to give it a star! ⭐
 
 And also … claps are appreciated! 👏
-

@@ -27,6 +27,12 @@ public class ConfigurationStore
         NotifyListeners();
     }
 
+    public void SetAll(IReadOnlyDictionary<string, object> newData)
+    {
+        data = newData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        NotifyListeners();
+    }
+
     public T GetValue<T>(string key) => (T)data[key];
 
     public T? GetValueOrDefault<T>(string key) {
@@ -37,12 +43,6 @@ public class ConfigurationStore
         return default;
     }
     
-    public void SetAll(IReadOnlyDictionary<string, object> newData)
-    {
-        data = newData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        NotifyListeners();
-    }
-
     public class Source(ConfigurationStore store) : IConfigurationSource
     {
         public IConfigurationProvider Build(IConfigurationBuilder builder) => new Provider(store);
