@@ -8,15 +8,15 @@
 
 ## Create a Bridge Between DI-Container and Configuration 
 
-First thing first, let's create our project. We'll use `web` template to have all the required dependencies, like `Microsoft.Extensions.Configuration` in place by default:
+First thing first, let's create our project. We'll use the `web` template to have all the required dependencies, like `Microsoft.Extensions.Configuration` in place by default:
 
 ```sh
 dotnet new web
 ```
 
-Now, let's move to the most important thing in this article? How do we connect data from objects inside a dependency injection container to the configuration system that does not have an access to it. The answer is by using the good-old **Singleton**. 
+Now, let's move to the most important question of this article: How do we connect data from objects inside a dependency injection container to the configuration system that does not have access to it? The answer is using the good old Singleton. 
 
-Since we can only have one singleton in an application we can use the singleton as a data-container to share the data between DI-system and the rest of the app. Here's how we can implement it on the very basic level:
+Since we can only have one singleton in an application we can use the singleton as a data container to share the data between the DI-system and the rest of the app. Here's how we can implement it on a very basic level:
 
 ```csharp
 public class ConfigurationStore
@@ -78,11 +78,11 @@ Now, with the bridge implemented let's first use it in a configuration provider!
 
 ## Implementing our Background Configuration Provider
 
-I've described the process of making a custom configuration providers in the dedicated [article](https://medium.com/p/3d8a3a8f7203). Basically, all we need to do is to call the `Load` method whenever we detect changes. Here our listening system comes in handy - we'll subscribe to the changes in the constructor and call `Load` method from an update handler.
+I've described the process of making custom configuration providers in the dedicated [article](https://medium.com/p/3d8a3a8f7203). Basically, all we need to do is to call the `Load` method whenever we detect changes. Here our listening system comes in handy - we'll subscribe to the changes in the constructor and call the `Load` method from an update handler.
 
-The `Load` method doesn't accepts any parameters, so to access the updated data we would first need to capture it in a private field `_rawData`. Also, since in our case calling `Load` method basically means that a data has been changed we should also call `OnReload` in the end to notify the configuration system about the changes. Here's the complete code:
+The `Load` method doesn't accept any parameters, so to access the updated data we would first need to capture it in a private field `_rawData`. Also, since in our case calling the `Load` method basically means that data has been changed we should also call `OnReload` at the end to notify the configuration system about the changes. Here's the complete code:
 
-> The classes are expected to be nested inside the `ConfigurationStore` class, hence the short name. You can find the full class code in the of the article.
+> The classes are expected to be nested inside the `ConfigurationStore` class, hence the short name. You can find the full class code at the end of the article.
 
 ```csharp
 public class Source(ConfigurationStore store) : IConfigurationSource
@@ -114,7 +114,7 @@ Now, you should be able to utilize the `ConfigurationStore` for updating the act
 
 ## Assembling a Working System
 
-We'll do a very simple `IHostedService`, using our `ConfigurationStore` to update the `Counter` value. Here's how it might look like: 
+We'll do a very simple `IHostedService`, using our `ConfigurationStore` to update the `Counter` value. Here's what it might look like: 
 
 ```csharp
 public class Counting
@@ -140,7 +140,7 @@ public class Counting
 }
 ```
 
-Of course with the implementation the incrementation will happen only once, which is not something we wish for. Instead, we should increment 
+Of course, with the implementation, the incrementation will happen only once, which is not something we wish for. Instead, we should increment 
 
 I have a [dedicated article](https://medium.com/p/d020c73b63a4) about implementing safe timer functionality. Long story short, we'll need the `Backi.Timers` nuget package:
 
@@ -148,7 +148,7 @@ I have a [dedicated article](https://medium.com/p/d020c73b63a4) about implementi
 dotnet add package Backi.Timers
 ```
 
-Now, let's integrate the `SafeTimer` in our background service. Here's how our code should look like:
+Now, let's integrate the `SafeTimer` into our background service. Here's what our code should look like:
 
 ```csharp
 using Backi.Timers;
@@ -189,7 +189,7 @@ public class Counting
 }
 ```
 
-Finally, let's register all the things we've build app in this article. We'll need to add our configuration source, add our singleton to the DI-container, and register our background service there as well:
+Finally, let's register all the things we've built app in this article. We'll need to add our configuration source, add our singleton to the DI container, and register our background service there as well:
 
 ```csharp
 ((IConfigurationBuilder)builder.Configuration).Add(new ConfigurationStore.Source(ConfigurationStore.Instance));
@@ -209,7 +209,7 @@ Here's what we should get after starting our app via `dotnet run`
 
 ![](logs-demo.png)
 
-Let's also check that we will be able to get the configuration value from the Microsoft's `IConfiguration` object. Let's first install a package, providing us with `GetRequiredValue` extension method:
+Let's also check that we will be able to get the configuration value from Microsoft's `IConfiguration` object. Let's first install a package, providing the `GetRequiredValue` extension method:
 
 ```sh
 dotnet add package Confi
@@ -225,7 +225,7 @@ using Confi;
 app.MapGet("/counter", (IConfiguration config) => config.GetRequiredValue(Counting.Key));
 ```
 
-Calling that endpoint via `curl localhost:5057/counter` we should get the current count, in my case it was `16`. That wraps up our little journey, let's do a quick recap in the final section.
+Calling that endpoint via `curl localhost:5057/counter` we should get the current count, in my case, it was `16`. That wraps up our little journey, let's do a quick recap in the final section.
 
 ## TLDR;
 
