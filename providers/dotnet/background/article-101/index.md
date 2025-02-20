@@ -242,7 +242,7 @@ public class ConfigurationStore
 }
 ```
 
-We've used the object in our `Countng.BackgroundService` to showcase the functionality. There's still some improvements to do, but I don't want to overflow this article, so maybe next time.
+We've used the object in our `Counting.BackgroundService` to showcase the functionality. There are still some improvements to make, but I don't want to overflow this article, so maybe next time.
 
 The source code for this article can be found [here on github](https://github.com/astorDev/confi/tree/main/providers/dotnet/background/playground). This article, as well as the underlying library, is part of the [project, called Confi](https://github.com/astorDev/confi) - don't hesitate to give it a star! ⭐
 
