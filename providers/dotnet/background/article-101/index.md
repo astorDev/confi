@@ -8,9 +8,15 @@
 
 ## Create a Bridge Between DI-Container and Configuration 
 
+First thing first, let's create our project. We'll use `web` template to have all the required dependencies, like `Microsoft.Extensions.Configuration` in place by default:
+
 ```sh
 dotnet new web
 ```
+
+Now, let's move to the most important thing in this article? How do we connect data from objects inside a dependency injection container to the configuration system that does not have an access to it. The answer is by using the good-old **Singleton**. 
+
+Since we can only have one singleton in an application we can use the singleton as a data-container to share the data between DI-system and the rest of the app. Here's how we can implement it on the very basic level:
 
 ```csharp
 public class ConfigurationStore
@@ -21,6 +27,8 @@ public class ConfigurationStore
     private ConfigurationStore(){}
 }
 ```
+
+We will also want the data "consumers" to know about the data changes as soon as they arrive, so let's spin up a little listening system:
 
 ```csharp
 private List<Action<Dictionary<string, object>>> listeners = new();
@@ -39,6 +47,8 @@ public void NotifyListeners()
     }
 }
 ```
+
+Finally, let's implement methods for writing and reading the data. Of course, we'll also `NotifyListeners` whenever the data is being updated. Here's the code:
 
 ```csharp
 public void SetValue(string key, object value)
@@ -64,9 +74,15 @@ public T? GetValueOrDefault<T>(string key) {
 }
 ```
 
+Now, with the bridge implemented let's first use it in a configuration provider!
+
 ## Implementing our Background Configuration Provider
 
-[article](https://medium.com/p/3d8a3a8f7203)
+I've described the process of making a custom configuration providers in the dedicated [article](https://medium.com/p/3d8a3a8f7203). Basically, all we need to do is to call the `Load` method whenever we detect changes. Here our listening system comes in handy - we'll subscribe to the changes in the constructor and call `Load` method from an update handler.
+
+The `Load` method doesn't accepts any parameters, so to access the updated data we would first need to capture it in a private field `_rawData`. Also, since in our case calling `Load` method basically means that a data has been changed we should also call `OnReload` in the end to notify the configuration system about the changes. Here's the complete code:
+
+> The classes are expected to be nested inside the `ConfigurationStore` class, hence the short name. You can find the full class code in the of the article.
 
 ```csharp
 public class Source(ConfigurationStore store) : IConfigurationSource
@@ -94,13 +110,45 @@ public class Provider : ConfigurationProvider
 }
 ```
 
+Now, you should be able to utilize the `ConfigurationStore` for updating the actual configuration. Let me show you how:
+
 ## Assembling a Working System
 
-[article](https://medium.com/p/d020c73b63a4)
+We'll do a very simple `IHostedService`, using our `ConfigurationStore` to update the `Counter` value. Here's how it might look like: 
+
+```csharp
+public class Counting
+{
+    public const string Key = "Counter";
+
+    public class BackgroundService(ILogger<BackgroundService> logger, ConfigurationStore store) : IHostedService
+    {
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            var currentValue = store.GetValueOrDefault<int>(Key);
+            logger.LogInformation("Incrementing counter. Current value: {currentValue}", currentValue);
+            store.SetValue(Key, currentValue + 1);
+
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
+```
+
+Of course with the implementation the incrementation will happen only once, which is not something we wish for. Instead, we should increment 
+
+I have a [dedicated article](https://medium.com/p/d020c73b63a4) about implementing safe timer functionality. Long story short, we'll need the `Backi.Timers` nuget package:
 
 ```sh
 dotnet add package Backi.Timers
 ```
+
+Now, let's integrate the `SafeTimer` in our background service. Here's how our code should look like:
 
 ```csharp
 using Backi.Timers;
@@ -141,30 +189,43 @@ public class Counting
 }
 ```
 
+Finally, let's register all the things we've build app in this article. We'll need to add our configuration source, add our singleton to the DI-container, and register our background service there as well:
+
 ```csharp
-builder.Configuration.AddConfigurationStore(ConfigurationStore.Instance);
+((IConfigurationBuilder)builder.Configuration).Add(new ConfigurationStore.Source(ConfigurationStore.Instance));
 
 builder.Services.AddSingleton(ConfigurationStore.Instance);
 
 builder.Services.AddHostedService<Counting.BackgroundService>();
 ```
 
-```csharp
-app.MapGet("/counter", (IConfiguration config) => config.GetRequiredValue(Counting.Key));
-```
-
-![](logs-demo.png)
+Let's also slightly update logging to get a more compact view:
 
 ```csharp
-var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 ```
 
+Here's what we should get after starting our app via `dotnet run`
+
+![](logs-demo.png)
+
+Let's also check that we will be able to get the configuration value from the Microsoft's `IConfiguration` object. Let's first install a package, providing us with `GetRequiredValue` extension method:
+
 ```sh
-curl localhost:5057/counter
+dotnet add package Confi
 ```
 
-`16`
+Next, we'll add an endpoint:
+
+```csharp
+using Confi;
+
+// ...
+
+app.MapGet("/counter", (IConfiguration config) => config.GetRequiredValue(Counting.Key));
+```
+
+Calling that endpoint via `curl localhost:5057/counter` we should get the current count, in my case it was `16`. That wraps up our little journey, let's do a quick recap in the final section.
 
 ## TLDR;
 

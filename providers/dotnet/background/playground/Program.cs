@@ -6,7 +6,7 @@ using V3;
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
-builder.Configuration.AddConfigurationStore(ConfigurationStore.Instance);
+((IConfigurationBuilder)builder.Configuration).Add(new ConfigurationStore.Source(ConfigurationStore.Instance));
 
 builder.Services.AddSingleton(ConfigurationStore.Instance);
 
