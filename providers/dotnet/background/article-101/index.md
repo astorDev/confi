@@ -2,6 +2,8 @@
 
 > Connecting ASP .NET Core Configuration System with Dependency Injection enabled `IHostedService`
 
+![](thumb.png)
+
 .NET provides a versatile configuration framework, allowing us to [implement a custom configuration provider](https://medium.com/@vosarat1995/custom-configuration-provider-in-net-step-by-step-guide-3d8a3a8f7203). Most of the times, the provider's goal is to read configuration data from some source in the background. In the meantime, ASP .NET Core provides us with a simple way to enable a DI-based background process by injecting an `IHostedService` into our DI container. However, there is no built-in way to connect those two. Gladly, there is a (slightly tricky) way to do it - let me show you!
 
 > Or jump straight to the [TLDR](#tldr) for spoilers 😉 
