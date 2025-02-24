@@ -20,7 +20,7 @@ builder.Services.AddMongo(
     sp => new MongoClient(builder.Configuration.GetRequiredValue("ConnectionStrings:Mongo")), 
     "confi-manager"
 )
-.AddCollection<NodeRecord>("nodes");
+.AddConfiManagerCollections();
 
 var app = builder.Build();
 

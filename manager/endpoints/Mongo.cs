@@ -16,4 +16,7 @@ public static class Mongo
 
     public static BsonDocument ToBsonDocument(this JsonElement json) =>
         BsonDocument.Parse(json.GetRawText());
+
+    public static bool Equivalent(this BsonDocument bson, BsonDocument other) => 
+        bson.ToJson() == other.ToJson();
 }

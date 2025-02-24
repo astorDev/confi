@@ -6,13 +6,15 @@ namespace Confi.Manager;
 public record Node(
     string Id,
     string AppId,
+    string Version,
     JsonElement Schema,
     JsonElement Configuration
 );
 
 public record NodeCandidate(
     JsonElement Schema, 
-    JsonElement Configuration
+    JsonElement Configuration,
+    string Version
 );
 
 public record NodeState(string Status);
