@@ -1,8 +1,8 @@
 on:
   push:
     paths:
-      - 'manager/**'
-      - '.github/workflows/manager-nuget.yml'
+      - 'manager/protocol/**'
+      - '.github/workflows/manager-protocol-nuget.yml'
   workflow_dispatch:
 
 jobs:
@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: astorDev/versy/calver/nuget@main
         with:
-          project: manager/endpoints/Confi.Manager.Endpoints
+          project: manager/endpoints/Confi.Manager.Protocol
           nuget-api-key: ${{ secrets.NUGET_API_KEY }}
