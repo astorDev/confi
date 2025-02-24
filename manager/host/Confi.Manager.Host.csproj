@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Astor.Logging" Version="2024.106.109.27" />
+    <PackageReference Include="Confi" Version="2024.110.108.4" />
+    <PackageReference Include="Fluenv" Version="2024.109.101.5" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
+    <PackageReference Include="Nist.Logs" Version="2024.106.109.28" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.0.1" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\protocol\Confi.Manager.Protocol.csproj" />
+    <ProjectReference Include="..\endpoints\Confi.Manager.Endpoints.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Confi.Manager" />
+    <Using Include="System.Net" />
+    <Using Include="System.Reflection" />
+    <Using Include="Microsoft.AspNetCore.Mvc" />
+    <Using Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+</Project>
