@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: astorDev/versy/calver/nuget@main
         with:
-          project: manager/endpoints/Confi.Manager.Protocol
+          project: manager/protocol/Confi.Manager.Protocol
           nuget-api-key: ${{ secrets.NUGET_API_KEY }}
