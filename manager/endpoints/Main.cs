@@ -25,7 +25,7 @@ public static class MainHelper
 
     public static Error? ToConfiManagerError(this Exception exception)
     {
-        return NodeEntrypoints.MapNodesErrors(exception)
+        return NodeHelper.MapNodesErrors(exception)
             ?? AppHelper.MapAppErrors(exception)
             ?? null;
     }

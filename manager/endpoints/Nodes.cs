@@ -6,7 +6,7 @@ using Persic;
 
 namespace Confi.Manager;
 
-public static class NodeEntrypoints
+public static class NodeHelper
 {
     public static IEndpointRouteBuilder MapNodes(this IEndpointRouteBuilder endpoints) 
     {
