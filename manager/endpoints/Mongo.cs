@@ -10,4 +10,10 @@ public static class Mongo
         var bson = await bsonTask;
         return JsonDocument.Parse(bson.ToJson());
     }
+
+    public static JsonElement ToJsonElement(this BsonDocument bson) => 
+        JsonDocument.Parse(bson.ToJson()).RootElement;
+
+    public static BsonDocument ToBsonDocument(this JsonElement json) =>
+        BsonDocument.Parse(json.GetRawText());
 }

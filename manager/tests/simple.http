@@ -1,0 +1,34 @@
+PUT /backoffice/nodes/a946e53e-ceb1-461e-9d5a-20f323ca16ac
+
+{
+    "schema" : {
+      "type": "object",
+      "properties": {
+        "FeatureManagement": {
+          "type": "object",
+          "properties": {
+            "OnboardingHub": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "OnboardingHub"
+          ]
+        }
+      },
+      "required": [
+        "FeatureManagement"
+      ]
+    },
+    "configuration" : {
+        "FeatureManagement": {
+            "OnboardingHub": true
+        }
+    }
+}
+
+###
+GET /backoffice/nodes/a946e53e-ceb1-461e-9d5a-20f323ca16ac
+
+###
+GET /backoffice/nodes/invalid

@@ -12,4 +12,8 @@
     <PackageReference Include="Persic.Mongo" Version="2025.101.127.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\protocol\Confi.Manager.Protocol.csproj" />
+  </ItemGroup>
+
 </Project>
