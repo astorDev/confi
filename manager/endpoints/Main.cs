@@ -4,12 +4,13 @@ using Persic;
 
 namespace Confi;
 
-public static class Entrypoint
+public static class MainHelper
 {
     public static IEndpointRouteBuilder MapConfiManager(this IEndpointRouteBuilder endpoints) 
     {
         endpoints.MapNodes();
         endpoints.MapApps();
+        endpoints.MapConfiguration();
 
         return endpoints;
     }
@@ -18,13 +19,14 @@ public static class Entrypoint
     {
         return builder
             .AddCollection<NodeRecord>("nodes")
-            .AddCollection<SchemeRecord>("schemas");
+            .AddCollection<SchemeRecord>("schemas")
+            .AddCollection<ConfigurationRecord>("configs");
     }
 
     public static Error? ToConfiManagerError(this Exception exception)
     {
         return NodeEntrypoints.MapNodesErrors(exception)
-            ?? AppEntrypoints.MapAppErrors(exception)
+            ?? AppHelper.MapAppErrors(exception)
             ?? null;
     }
 }

@@ -1,12 +1,11 @@
 using System.Collections;
-using MongoDB.Bson;
+using System.Threading.Tasks;
 using MongoDB.Driver;
 using Nist;
-using Persic;
 
 namespace Confi.Manager;
 
-public static class AppEntrypoints
+public static class AppHelper
 {
     public static IEndpointRouteBuilder MapApps(this IEndpointRouteBuilder endpoints) 
     {
@@ -15,28 +14,32 @@ public static class AppEntrypoints
         return endpoints;
     }
 
-    public static App GetApp(
+    public static async Task<App> GetApp(
         string appId, 
         IMongoCollection<SchemeRecord> schemasCollection,
-        IMongoCollection<NodeRecord> nodesCollection)
+        IMongoCollection<NodeRecord> nodesCollection,
+        IMongoCollection<ConfigurationRecord> configurationsCollection)
     {
-        var schemeRecord = schemasCollection
-            .Find(x => x.Id == appId)
-            .FirstOrDefault() ?? throw new AppNotFoundException(appId);
+        var schemeRecord = await schemasCollection.Search(appId) 
+            ?? throw new AppNotFoundException(appId);
+
+        var configurationRecord = await configurationsCollection.Search(appId)
+            ?? throw new AppNotFoundException(appId);
 
         var nodeRecords = nodesCollection
             .Find(x => x.AppId == appId)
             .ToList();
-
+        
         return new App(
             schemeRecord.Id,
             nodeRecords.ToDictionary(
                 x => x.Id, 
                 x => new NodeState(
-                    Status: x.DetermineStatus(schemeRecord.Schema)
+                    Status: x.DetermineStatus(configurationRecord.Value)
                 )
             ),
-            schemeRecord.Schema.ToJsonElement()
+            schemeRecord.Schema.ToJsonElement(),
+            configurationRecord.Value.ToJsonElement()
         );
     }
 
@@ -50,14 +53,6 @@ public static class AppEntrypoints
     }
 }
 
-public static class NodeStatusDeterminer
-{
-    public static string DetermineStatus(this NodeRecord node, BsonDocument configuration)
-    {
-        return node.Schema.Equivalent(configuration) ? NodeStatus.Synced : NodeStatus.NotSynced;
-    }
-}
-
 public class AppNotFoundException(string appId) : Exception
 {
     public override IDictionary Data => new Dictionary<string, string> {
@@ -66,9 +61,3 @@ public class AppNotFoundException(string appId) : Exception
 
     public Error ToError() => Errors.AppNotFound;
 }
-
-public record SchemeRecord(
-    string Id, // matches app id
-    string Version,
-    BsonDocument Schema
-) : IMongoRecord<string>;

@@ -35,3 +35,15 @@ GET /backoffice/nodes/invalid
 
 ####
 GET /backoffice
+
+###
+PUT /backoffice/configuration
+
+{
+    "FeatureManagement": {
+        "OnboardingHub": true
+    }
+}
+
+###
+DELETE /backoffice/nodes/a946e53e-ceb1-461e-9d5a-20f323ca16ac

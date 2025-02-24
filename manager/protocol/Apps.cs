@@ -6,7 +6,8 @@ namespace Confi.Manager;
 public record App(
     string Id,
     Dictionary<string, NodeState> Nodes,
-    JsonElement Schema
+    JsonElement Schema,
+    JsonElement Configuration
 );
 
 public partial class Client {

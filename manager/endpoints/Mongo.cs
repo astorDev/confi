@@ -1,5 +1,7 @@
 using System.Text.Json;
 using MongoDB.Bson;
+using MongoDB.Driver;
+using Persic;
 
 namespace Confi;
 
@@ -19,4 +21,10 @@ public static class Mongo
 
     public static bool Equivalent(this BsonDocument bson, BsonDocument other) => 
         bson.ToJson() == other.ToJson();
+
+    public static async Task<TMongoRecord?> Search<TMongoRecord>(this IMongoCollection<TMongoRecord> collection, string id)
+        where TMongoRecord : IMongoRecord<string>
+    {
+        return await collection.Find(r => r.Id == id).FirstOrDefaultAsync();
+    }       
 }

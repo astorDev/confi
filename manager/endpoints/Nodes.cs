@@ -12,6 +12,7 @@ public static class NodeEntrypoints
     {
         endpoints.MapPut("{appId}/nodes/{nodeId}", PutNode);
         endpoints.MapGet("{appId}/nodes/{nodeId}", GetNode);
+        endpoints.MapDelete("{appId}/nodes/{nodeId}", DeleteNode);
 
         return endpoints;
     }
@@ -32,10 +33,11 @@ public static class NodeEntrypoints
         string appId, 
         string nodeId, 
         NodeCandidate candidate, 
-        IMongoCollection<NodeRecord> mongoCollection,
-        IMongoCollection<SchemeRecord> schemasCollection)
+        IMongoCollection<NodeRecord> nodeCollection,
+        IMongoCollection<SchemeRecord> schemasCollection,
+        IMongoCollection<ConfigurationRecord> configurationCollection)
     {
-        var mongoRecord = new NodeRecord(
+        var record = new NodeRecord(
             nodeId, 
             appId, 
             candidate.Version,
@@ -44,24 +46,25 @@ public static class NodeEntrypoints
             candidate.Configuration.ToBsonDocument()
         );
 
-        await mongoCollection.Put(mongoRecord);
+        await nodeCollection.Put(record);
 
-        var currentAppSchema = await mongoCollection
-            .Find(x => x.Id == appId)
-            .FirstOrDefaultAsync();
+        await schemasCollection.EnsureSchemaIsUpToDate(candidate, appId);
+        await configurationCollection.EnsureAppConfigurationIsSet(appId, record.Configuration);
 
-        if (currentAppSchema == null || candidate.Version.IsNewerThan(currentAppSchema.Version))
-        {
-            var newAppSchema = new SchemeRecord(
-                appId, 
-                candidate.Version, 
-                candidate.Schema.ToBsonDocument()
-            );
+        return record.ToProtocol();
+    }
 
-            await schemasCollection.Put(newAppSchema);
-        }
+    public static async Task<Node> DeleteNode(
+        string appId,
+        string nodeId,
+        IMongoCollection<NodeRecord> nodeCollection
+    )
+    {
+        var node = await nodeCollection.Search(nodeId) ?? throw new NodeNotFoundException(appId, nodeId);
 
-        return mongoRecord.ToProtocol();
+        await nodeCollection.DeleteOneAsync(x => x.Id == nodeId && x.AppId == appId);
+
+        return node.ToProtocol();
     }
 
     public static Error? MapNodesErrors(Exception exception)
@@ -71,6 +74,12 @@ public static class NodeEntrypoints
             NodeNotFoundException e => e.ToError(),
             _ => null
         };
+    }
+    
+    public static string DetermineStatus(this NodeRecord node, BsonDocument configuration)
+    {
+        return node.Configuration.Equivalent(configuration)
+            ? NodeStatus.Synced : NodeStatus.NotSynced;
     }
 }
 
