@@ -15,7 +15,10 @@ builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 builder.Configuration.AddFluentEnvironmentVariables();
 
 builder.Services.AddOpenApi();
-builder.Services.AddMongo(builder.Configuration.GetRequiredValue("ConnectionStrings:Mongo"), "confi-manager");
+builder.Services.AddMongo(
+    sp => new MongoClient(builder.Configuration.GetRequiredValue("ConnectionStrings:Mongo")), 
+    "confi-manager"
+);
 
 var app = builder.Build();
 

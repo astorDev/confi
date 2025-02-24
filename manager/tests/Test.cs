@@ -1,8 +1,13 @@
+using FakeItEasy;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 
 public class Test
 {
+    public static readonly IMongoDatabase MongoDatabase = A.Fake<IMongoDatabase>();
     protected WebApplicationFactory Factory { get; } =  new();
     protected Client Client { get;  }
 
@@ -17,5 +22,14 @@ public class Test
     
     public class WebApplicationFactory : WebApplicationFactory<Program>
     {
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            base.ConfigureWebHost(builder);
+
+            builder.ConfigureTestServices(s =>
+            {
+                s.AddSingleton(MongoDatabase);
+            });
+        }
     }
 }

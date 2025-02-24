@@ -9,6 +9,8 @@ services:
     build:
       context: .
       dockerfile: host/Dockerfile
+    environment:
+      - CONNECTION_STRINGS_MONGO=mongodb://db:27017/
     ports:
       - "40398:8080"
   db:
