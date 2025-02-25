@@ -6,16 +6,16 @@ using Persic;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddBackgroundStore(MongoConfigurationLoader.Key);
-
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
-builder.Services.AddMongo("mongodb://localhost:27017/?replicaSet=rs0", "confi-playground")
-    .AddCollection<ConfigRecord>("configurations");
-
-builder.Services.AddBackgroundConfigurationStores();
-builder.Services.AddMongoBackgroundConfigurationLoader("simple", MongoLoadingMode.LongPolling);
-builder.Services.AddMongoBackgroundConfigurationLoader("toggles");
+builder.AddMongoConfiguration(
+    sp => new MongoClient("mongodb://localhost:27017/?replicaSet=rs0"), 
+    databaseName: "confi-playground",
+    cfg => cfg
+        .AddLoader("simple", MongoLoadingMode.LongPolling)
+        .AddLoader("toggles"),
+    configsCollectionName: "configurations"
+);
 
 var app = builder.Build();
 

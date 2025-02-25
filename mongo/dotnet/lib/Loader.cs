@@ -17,10 +17,10 @@ public class MongoConfigurationPoller(
     ILogger<MongoConfigurationLoader> logger) : IHostedService
 {
     private readonly ConfigurationBackgroundStore store = factory.GetStore(MongoConfigurationLoader.Key);
-    SafeTimer _timer;
+    SafeTimer _timer = null!;
     Dictionary<string, object>? known;
     
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting Polling configuration from collection {collectionName} for document {documentId}", 
             collection.CollectionNamespace.CollectionName,
@@ -32,13 +32,17 @@ public class MongoConfigurationPoller(
             async () => await PollConfiguration(cancellationToken: cancellationToken),
             ex => logger.LogError(ex, "Error while polling configuration")
         );
+
+        return Task.CompletedTask;
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Stopping poller timer");
         
         _timer.Stop();
+
+        return Task.CompletedTask;
     }
     
     private async Task PollConfiguration(CancellationToken cancellationToken)

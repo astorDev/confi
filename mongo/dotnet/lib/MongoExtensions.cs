@@ -1,9 +1,43 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MongoDB.Bson;
+using MongoDB.Driver;
+using Persic;
 
 namespace Confi;
 
+public class MongoConfigurationBuilder(IServiceCollection services)
+{
+    public MongoConfigurationBuilder AddLoader(string configurationKey, MongoLoadingMode loadingMode = MongoLoadingMode.CollectionWatch)
+    {
+        services.AddMongoBackgroundConfigurationLoader(configurationKey, loadingMode);
+        return this;
+    }
+}
+
 public static class MongoConfigurationExtensions
 {
+    public static IHostApplicationBuilder AddMongoConfiguration(
+        this IHostApplicationBuilder builder,
+        Func<IServiceProvider, IMongoClient> clientFactory, 
+        string databaseName,
+        Action<MongoConfigurationBuilder> configure,
+        string configsCollectionName = "configs"
+        )
+    {
+        builder.Configuration.AddBackgroundStore(MongoConfigurationLoader.Key);
+
+        builder.Services.AddBackgroundConfigurationStores();
+
+        builder.Services.AddMongo(clientFactory, databaseName)
+            .AddCollection<ConfigRecord>(configsCollectionName);
+
+        var subBuilder = new MongoConfigurationBuilder(builder.Services);
+        configure(subBuilder);
+
+        return builder;
+    }
+
     public static Dictionary<string, object> ToConfigurationDictionary(this BsonDocument document, string prefix = "")
     {
         var configs = new Dictionary<string, object>();
