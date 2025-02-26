@@ -15,14 +15,13 @@ public static class MongoConfigurationExtensions
         builder.Services.AddMongoCollection<ConfigurationRecord>(configsCollectionName);
         builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
 
-        builder.Configuration.AddBackgroundStore(MongoConfigurationLoader.Key(documentId));
-        builder.Services.AddBackgroundConfigurationStores();
-        builder.Services.AddSingleton<IHostedService>(sp => {
-            var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>().GetLoader(documentId);   
-            return new MongoBackgroundConfigurationWatcher(loader);
-        });
-
-        return builder;
+        return builder.AddBackgroundConfiguration(
+            MongoConfigurationLoader.Key(documentId),
+            sp => {
+                var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>().GetLoader(documentId);   
+                return new MongoBackgroundConfigurationWatcher(loader);
+            }
+        );
     }
 
     public static IHostApplicationBuilder AddMongoConfiguration(
@@ -35,16 +34,15 @@ public static class MongoConfigurationExtensions
         builder.Services.AddMongoCollection<ConfigurationRecord>(configsCollectionName);
         builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
 
-        builder.Configuration.AddBackgroundStore(MongoConfigurationLoader.Key(documentId));
-        builder.Services.AddBackgroundConfigurationStores();
-        builder.Services.AddSingleton<IHostedService>(sp => {
-            var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>().GetLoader(documentId);   
-            return mode == MongoReadingMode.CollectionWatching
-                ? new MongoBackgroundConfigurationWatcher(loader)
-                : new MongoConfigurationPoller(loader);
-        });
-
-        return builder;
+        return builder.AddBackgroundConfiguration<IHostedService>(
+            MongoConfigurationLoader.Key(documentId),
+            sp => {
+                var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>().GetLoader(documentId);   
+                return mode == MongoReadingMode.CollectionWatching
+                    ? new MongoBackgroundConfigurationWatcher(loader)
+                    : new MongoConfigurationPoller(loader);
+            }
+        );
     }
 }
 
