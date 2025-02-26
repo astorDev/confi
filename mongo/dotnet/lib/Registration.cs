@@ -4,7 +4,7 @@ using Persic;
 
 namespace Confi;
 
-public enum MongoLoadingMode
+public enum MongoReadingMode
 {
     CollectionWatching,
     LongPolling
@@ -12,12 +12,12 @@ public enum MongoLoadingMode
 
 public static class LoaderModeRegistration
 {
-    public static IServiceCollection AddMongoBackgroundConfigurationService(this IServiceCollection services, string documentId, MongoLoadingMode mode = MongoLoadingMode.CollectionWatching)
+    public static IServiceCollection AddMongoBackgroundConfigurationService(this IServiceCollection services, string documentId, MongoReadingMode mode = MongoReadingMode.CollectionWatching)
     {
         return services.AddSingleton<IHostedService>(sp => {
             var loaderFactory = sp.GetRequiredService<MongoConfigurationLoader.Factory>();
             var loader = loaderFactory.GetLoader(documentId);
-            return mode == MongoLoadingMode.CollectionWatching
+            return mode == MongoReadingMode.CollectionWatching
                 ? new MongoBackgroundConfigurationWatcher(loader)
                 : new MongoConfigurationPoller(loader);
         });
@@ -26,7 +26,7 @@ public static class LoaderModeRegistration
 
 public class MongoConfigurationBuilder(IServiceCollection services)
 {
-    public MongoConfigurationBuilder AddLoader(string configurationKey, MongoLoadingMode loadingMode = MongoLoadingMode.CollectionWatching)
+    public MongoConfigurationBuilder AddLoader(string configurationKey, MongoReadingMode loadingMode = MongoReadingMode.CollectionWatching)
     {
         services.AddMongoBackgroundConfigurationService(configurationKey, loadingMode);
         return this;
@@ -35,6 +35,49 @@ public class MongoConfigurationBuilder(IServiceCollection services)
 
 public static class MongoConfigurationExtensions
 {
+    public static IHostApplicationBuilder AddMongoConfiguration(
+        this IHostApplicationBuilder builder,
+        string documentId,
+        string configsCollectionName = "configs"
+    )
+    {
+        builder.Configuration.AddBackgroundStore(MongoConfigurationLoader.Key);
+
+        builder.Services.AddBackgroundConfigurationStores();
+        builder.Services.AddMongoCollection<ConfigurationRecord>(configsCollectionName);
+        builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
+        
+        builder.Services.AddSingleton<IHostedService>(sp => {
+            var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>().GetLoader(documentId);   
+            return new MongoBackgroundConfigurationWatcher(loader);
+        });
+
+        return builder;
+    }
+
+    public static IHostApplicationBuilder AddMongoConfiguration(
+        this IHostApplicationBuilder builder,
+        string documentId,
+        MongoReadingMode mode,
+        string configsCollectionName = "configs"
+    )
+    {
+        builder.Configuration.AddBackgroundStore(MongoConfigurationLoader.Key);
+
+        builder.Services.AddBackgroundConfigurationStores();
+        builder.Services.AddMongoCollection<ConfigurationRecord>(configsCollectionName);
+        builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
+        
+        builder.Services.AddSingleton<IHostedService>(sp => {
+            var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>().GetLoader(documentId);   
+            return mode == MongoReadingMode.CollectionWatching
+                ? new MongoBackgroundConfigurationWatcher(loader)
+                : new MongoConfigurationPoller(loader);
+        });
+
+        return builder;
+    }
+
     public static IHostApplicationBuilder AddMongoConfiguration(
         this IHostApplicationBuilder builder,
         Action<MongoConfigurationBuilder> configure,

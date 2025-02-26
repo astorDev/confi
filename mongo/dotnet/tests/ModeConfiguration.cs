@@ -13,9 +13,9 @@ public class Options
             .AddInMemoryCollection(new[] { new KeyValuePair<string, string?>("Mode", "LongPolling") })
             .Build();
 
-        var resolvedMode = configuration.GetValue<MongoLoadingMode>("Mode");
+        var resolvedMode = configuration.GetValue<MongoReadingMode>("Mode");
         Console.Write(resolvedMode);
-        resolvedMode.ShouldBe(MongoLoadingMode.LongPolling);
+        resolvedMode.ShouldBe(MongoReadingMode.LongPolling);
     }
     
     [TestMethod]
@@ -25,9 +25,9 @@ public class Options
             .AddInMemoryCollection(new[] { new KeyValuePair<string, string?>("Mode", "CollectionWatch") })
             .Build();
 
-        var resolvedMode = configuration.GetValue<MongoLoadingMode>("Mode");
+        var resolvedMode = configuration.GetValue<MongoReadingMode>("Mode");
         Console.Write(resolvedMode);
-        resolvedMode.ShouldBe(MongoLoadingMode.CollectionWatching);
+        resolvedMode.ShouldBe(MongoReadingMode.CollectionWatching);
     }
     
     [TestMethod]
@@ -38,9 +38,9 @@ public class Options
             .AddInMemoryCollection(new[] { new KeyValuePair<string, string?>("Mode", "Unmatched") })
             .Build();
 
-        var resolvedMode = configuration.GetValue<MongoLoadingMode?>("Mode");
+        var resolvedMode = configuration.GetValue<MongoReadingMode?>("Mode");
         Console.Write(resolvedMode);
-        resolvedMode.ShouldBe(MongoLoadingMode.CollectionWatching);
+        resolvedMode.ShouldBe(MongoReadingMode.CollectionWatching);
     }
 
     [TestMethod]
@@ -49,7 +49,7 @@ public class Options
         var configuration = new ConfigurationBuilder()
             .Build();
 
-        var resolvedMode = configuration.GetValue<MongoLoadingMode?>("Mode");
+        var resolvedMode = configuration.GetValue<MongoReadingMode?>("Mode");
         Console.Write(resolvedMode);
         resolvedMode.ShouldBeNull();
     }

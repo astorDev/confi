@@ -8,10 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
-builder.AddMongoConfiguration(cfg => cfg
-    .AddLoader("simple", MongoLoadingMode.LongPolling)
-    .AddLoader("toggles")
-);
+// v1:
+
+// builder.AddMongoConfiguration(documentId: "simple");
+
+// v2:
+
+// builder.AddMongoConfiguration(documentId: "simple", mode: MongoReadingMode.LongPolling);
+
+// v3:
+
+// builder.AddMongoConfiguration(cfg => cfg
+//     .AddLoader("simple", MongoLoadingMode.LongPolling)
+//     .AddLoader("toggles")
+// );
 
 builder.Services.AddMongo(
     "mongodb://localhost:27017/?replicaSet=rs0", 
