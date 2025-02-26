@@ -22,7 +22,7 @@ builder.Services.AddMongo(
 );
 ```
 
-After the registration, values from `simple` and `toggles` MongoDB documents will be automatically loaded to the `IConfiguration`, which is all that is needed from an .NET configuration system integration!
+After the registration, values from `simple` and `toggles` MongoDB documents will be automatically loaded to the `IConfiguration`, which is all that is needed from a .NET configuration system integration!
 
 The package is part of a [confi project](https://github.com/astorDev/confi), providing various configuration tools and best practices. Don't hesitate to give it a star! ⭐
 
