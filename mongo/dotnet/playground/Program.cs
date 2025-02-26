@@ -8,19 +8,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
-builder.AddMongoConfiguration(
-    sp => new MongoClient("mongodb://localhost:27017/?replicaSet=rs0"), 
-    databaseName: "confi-playground",
-    cfg => cfg
-        .AddLoader("simple", MongoLoadingMode.LongPolling)
-        .AddLoader("toggles"),
-    configsCollectionName: "configurations"
+builder.AddMongoConfiguration(cfg => cfg
+    .AddLoader("simple", MongoLoadingMode.LongPolling)
+    .AddLoader("toggles")
+);
+
+builder.Services.AddMongo(
+    "mongodb://localhost:27017/?replicaSet=rs0", 
+    "confi-playground"
 );
 
 var app = builder.Build();
 
 app.MapPut("simple/config", async (IMongoCollection<ConfigRecord> collection, IConfiguration configuration, JsonElement body) => {
-    var result = await collection.Put(body.ToDbRecord("simple"));
+    var result = await collection.Put(new (
+        "simple",
+        BsonDocument.Parse(body.ToString()
+    )));
 
     await Task.Delay(100);
     
@@ -34,7 +38,10 @@ app.MapPut("simple/config", async (IMongoCollection<ConfigRecord> collection, IC
 });
 
 app.MapPut("toggles/config", async (IMongoCollection<ConfigRecord> collection, IConfiguration configuration, JsonElement body) => {
-    var result = await collection.Put(body.ToDbRecord("toggles"));
+    var result = await collection.Put(new(
+        "toggles",
+        BsonDocument.Parse(body.ToString()
+    )));
 
     await Task.Delay(100);
     
@@ -52,19 +59,3 @@ app.MapPut("toggles/config", async (IMongoCollection<ConfigRecord> collection, I
 });
 
 app.Run();
-
-public record AppConfiguration(string Id, JsonElement Value)
-{
-    public static AppConfiguration FromDbRecord(ConfigRecord record) => new(
-        record.Id, 
-        JsonDocument.Parse(record.Value.ToJson()).RootElement
-    );
-}
-
-public static class JsonElementExtensions
-{
-    public static ConfigRecord ToDbRecord(this JsonElement element, string Id) => new(
-        Id, 
-        BsonDocument.Parse(element.ToString())
-    );
-}

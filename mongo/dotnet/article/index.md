@@ -11,10 +11,18 @@ We need a database! MongoDB is JSON-based, so it comes with a dynamic schema and
 We've built a custom MongoDB configuration provider. The same provider could be found in a package, called `Confi.Mongo`. Here's how you can register one:
 
 ```csharp
+builder.AddMongoConfiguration(cfg => cfg
+    .AddLoader("simple", MongoLoadingMode.LongPolling)
+    .AddLoader("toggles")
+);
 
+builder.Services.AddMongo(
+    "mongodb://localhost:27017/?replicaSet=rs0", 
+    "confi-playground"
+);
 ```
 
-After the registration, values of `simple` and `toggles` documents from the `configurations` collection will be automatically loaded to the  `IConfiguration`, which is all we need to do to integrate with the .NET configuration system.
+After the registration, values from `simple` and `toggles` MongoDB documents will be automatically loaded to the `IConfiguration`, which is all that is needed from an .NET configuration system integration!
 
 The package is part of a [confi project](https://github.com/astorDev/confi), providing various configuration tools and best practices. Don't hesitate to give it a star! ⭐
 
