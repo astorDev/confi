@@ -2,9 +2,9 @@
 
 > Building Custom Configuration Provider to Read Configuration from MongoDB in an ASP .NET Core App.
 
-An ASP .NET Core app, comes with multiple built-in Configuration Sources like `appsettings.json`, environment variables, and command line arguments. Unfortunately, neither of them provide a convenient way to update a configuration value on the fly. Things get especially complex when we are talking about a distributed system, when we need to update the settings just once and get them propogated to multiple application instances.
+An ASP .NET Core app comes with multiple built-in Configuration Sources such as `appsettings.json`, environment variables, and command-line arguments. Unfortunately, neither of them provides a convenient way to update a configuration value on the fly. Things get especially complex with distributed systems where we need to update the settings just once and get them propagated to multiple application instances.
 
-We need a database! MongoDB is JSON-based, so it comes with a dynamic schema and resemblence to appsettings.json - let's use it. All that's left to do is to build our MongoDB Configuration Provider.
+We need a database! MongoDB is JSON-based, so it comes with a dynamic schema and resemblance to appsettings.json - let's use it. All that's left to do is to build our MongoDB Configuration Provider.
 
 ## TLDR;
 
