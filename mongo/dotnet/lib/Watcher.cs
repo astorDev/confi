@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace Confi;
 
-public class MongoBackgroundConfigurationWatcher(MongoBackgroundConfigurationLoader loader) : BackgroundService
+public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Confi;
 
-public class MongoConfigurationPoller(MongoBackgroundConfigurationLoader loader) : IHostedService
+public class MongoConfigurationPoller(MongoConfigurationLoader loader) : IHostedService
 {
     SafeTimer _timer = null!;
     Dictionary<string, object>? known;

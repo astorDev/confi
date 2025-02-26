@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -40,11 +38,11 @@ public record ConfigurationRecord(string Id, BsonDocument Value) : IMongoRecord<
     }
 }
 
-public class MongoBackgroundConfigurationLoader(
+public class MongoConfigurationLoader(
     IMongoCollection<ConfigurationRecord> collection, 
     ConfigurationBackgroundStore.Factory factory,
     string documentId,
-    ILogger<MongoBackgroundConfigurationLoader> logger
+    ILogger<MongoConfigurationLoader> logger
 )
 {
     public const string Key = "mongo";
@@ -52,7 +50,7 @@ public class MongoBackgroundConfigurationLoader(
     private readonly ConfigurationBackgroundStore store = factory.GetStore(Key);
     public IMongoCollection<ConfigurationRecord> Collection { get; } = collection;
     public string DocumentId { get; } = documentId;
-    public ILogger<MongoBackgroundConfigurationLoader> Logger { get; } = logger;
+    public ILogger<MongoConfigurationLoader> Logger { get; } = logger;
 
     public string CollectionName => Collection.CollectionNamespace.CollectionName;
 
@@ -65,29 +63,16 @@ public class MongoBackgroundConfigurationLoader(
     {
         return await Collection.Find(x => x.Id == DocumentId).FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
-}
 
-public static class LoaderRegistration
-{
-    public static IServiceCollection AddMongoBackgroundConfigurationService(
-        this IServiceCollection services, 
-        string documentId, 
-        Func<MongoBackgroundConfigurationLoader, IHostedService> factory
-        )
+    public class Factory(
+        IMongoCollection<ConfigurationRecord> collection,
+        ConfigurationBackgroundStore.Factory configurationFactory,
+        ILogger<MongoConfigurationLoader> logger
+    )
     {
-        return services.AddSingleton(sp => {
-            var collection = sp.GetRequiredService<IMongoCollection<ConfigurationRecord>>();
-            var configurationFactory = sp.GetRequiredService<ConfigurationBackgroundStore.Factory>();
-            var logger = sp.GetRequiredService<ILogger<MongoBackgroundConfigurationLoader>>();
-
-            var loader = new MongoBackgroundConfigurationLoader(
-                collection, 
-                configurationFactory, 
-                documentId, 
-                logger
-            );
-
-            return factory(loader);
-        });   
+        public MongoConfigurationLoader GetLoader(string documentId)
+        {
+            return new MongoConfigurationLoader(collection, configurationFactory, documentId, logger);
+        }
     }
 }
