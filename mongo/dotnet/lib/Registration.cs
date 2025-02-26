@@ -12,9 +12,9 @@ public enum MongoLoadingMode
 
 public static class LoaderModeRegistration
 {
-    public static IServiceCollection AddMongoBackgroundConfigurationLoader(this IServiceCollection services, string documentId, MongoLoadingMode mode = MongoLoadingMode.CollectionWatching)
+    public static IServiceCollection AddMongoBackgroundConfigurationService(this IServiceCollection services, string documentId, MongoLoadingMode mode = MongoLoadingMode.CollectionWatching)
     {
-        return services.AddMongoBackgroundConfigurationLoader(
+        return services.AddMongoBackgroundConfigurationService(
             documentId,
             (loader) => mode == MongoLoadingMode.CollectionWatching
                 ? new MongoBackgroundConfigurationWatcher(loader)
@@ -28,7 +28,7 @@ public class MongoConfigurationBuilder(IServiceCollection services)
 {
     public MongoConfigurationBuilder AddLoader(string configurationKey, MongoLoadingMode loadingMode = MongoLoadingMode.CollectionWatching)
     {
-        services.AddMongoBackgroundConfigurationLoader(configurationKey, loadingMode);
+        services.AddMongoBackgroundConfigurationService(configurationKey, loadingMode);
         return this;
     }
 }

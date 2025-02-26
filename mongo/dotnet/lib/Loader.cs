@@ -69,7 +69,7 @@ public class MongoBackgroundConfigurationLoader(
 
 public static class LoaderRegistration
 {
-    public static IServiceCollection AddMongoBackgroundConfigurationLoader(
+    public static IServiceCollection AddMongoBackgroundConfigurationService(
         this IServiceCollection services, 
         string documentId, 
         Func<MongoBackgroundConfigurationLoader, IHostedService> factory
@@ -80,9 +80,14 @@ public static class LoaderRegistration
             var configurationFactory = sp.GetRequiredService<ConfigurationBackgroundStore.Factory>();
             var logger = sp.GetRequiredService<ILogger<MongoBackgroundConfigurationLoader>>();
 
-            var uploader = new MongoBackgroundConfigurationLoader(collection, configurationFactory, documentId, logger);
+            var loader = new MongoBackgroundConfigurationLoader(
+                collection, 
+                configurationFactory, 
+                documentId, 
+                logger
+            );
 
-            return factory(uploader);
+            return factory(loader);
         });   
     }
 }
