@@ -20,7 +20,7 @@ builder.Services.AddMongo(
 
 var app = builder.Build();
 
-app.MapPut("simple/config", async (IMongoCollection<ConfigRecord> collection, IConfiguration configuration, JsonElement body) => {
+app.MapPut("simple/config", async (IMongoCollection<ConfigurationRecord> collection, IConfiguration configuration, JsonElement body) => {
     var result = await collection.Put(new (
         "simple",
         BsonDocument.Parse(body.ToString()
@@ -37,7 +37,7 @@ app.MapPut("simple/config", async (IMongoCollection<ConfigRecord> collection, IC
     };
 });
 
-app.MapPut("toggles/config", async (IMongoCollection<ConfigRecord> collection, IConfiguration configuration, JsonElement body) => {
+app.MapPut("toggles/config", async (IMongoCollection<ConfigurationRecord> collection, IConfiguration configuration, JsonElement body) => {
     var result = await collection.Put(new(
         "toggles",
         BsonDocument.Parse(body.ToString()

@@ -27,7 +27,7 @@ public class Options
 
         var resolvedMode = configuration.GetValue<MongoLoadingMode>("Mode");
         Console.Write(resolvedMode);
-        resolvedMode.ShouldBe(MongoLoadingMode.CollectionWatch);
+        resolvedMode.ShouldBe(MongoLoadingMode.CollectionWatching);
     }
     
     [TestMethod]
@@ -40,7 +40,7 @@ public class Options
 
         var resolvedMode = configuration.GetValue<MongoLoadingMode?>("Mode");
         Console.Write(resolvedMode);
-        resolvedMode.ShouldBe(MongoLoadingMode.CollectionWatch);
+        resolvedMode.ShouldBe(MongoLoadingMode.CollectionWatching);
     }
 
     [TestMethod]
