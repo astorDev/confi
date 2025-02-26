@@ -18,6 +18,9 @@ builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
 // v3:
 
+builder.AddMongoConfiguration(documentId: "simple");
+builder.AddMongoConfiguration(documentId: "toggles", mode: MongoReadingMode.LongPolling);
+
 // builder.AddMongoConfiguration(cfg => cfg
 //     .AddLoader("simple", MongoLoadingMode.LongPolling)
 //     .AddLoader("toggles")
@@ -63,6 +66,19 @@ app.MapPut("toggles/config", async (IMongoCollection<ConfigurationRecord> collec
                 featureB = new {
                     percentage = configuration["featureManagement:featureB:percentage"],
                 }
+            }
+        }
+    };
+});
+
+app.MapGet("config", (  IConfiguration configuration) => {
+    return new {
+        featureManagement = new {
+            name = configuration["name"],
+            age = configuration["age"],
+            featureA = configuration["featureManagement:featureA"],
+            featureB = new {
+                percentage = configuration["featureManagement:featureB:percentage"],
             }
         }
     };

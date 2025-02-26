@@ -45,9 +45,10 @@ public class MongoConfigurationLoader(
     ILogger<MongoConfigurationLoader> logger
 )
 {
-    public const string Key = "mongo";
+    private const string keyPrefix = "mongo";
+    public static string Key(string documentId) => $"{keyPrefix}:{documentId}";
 
-    private readonly ConfigurationBackgroundStore store = factory.GetStore(Key);
+    private readonly ConfigurationBackgroundStore store = factory.GetStore(Key(documentId));
     public IMongoCollection<ConfigurationRecord> Collection { get; } = collection;
     public string DocumentId { get; } = documentId;
     public ILogger<MongoConfigurationLoader> Logger { get; } = logger;

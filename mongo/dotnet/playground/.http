@@ -16,3 +16,5 @@ PUT http://localhost:5051/toggles/config
         }
     }
 }
+
+GET http://localhost:5051/config
