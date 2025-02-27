@@ -49,16 +49,17 @@ public class MongoConfigurationLoader(
     public static string Key(string documentId) => $"{keyPrefix}:{documentId}";
 
     private readonly ConfigurationBackgroundStore store = factory.GetStore(Key(documentId));
-    public IMongoCollection<ConfigurationRecord> Collection { get; } = collection;
-    public string DocumentId { get; } = documentId;
-    public ILogger<MongoConfigurationLoader> Logger { get; } = logger;
-
-    public string CollectionName => Collection.CollectionNamespace.CollectionName;
 
     public void Upload(ConfigurationRecord configurationRecord)
     {
         store.SetAll(configurationRecord.ToConfigurationDictionary());
     }
+    
+    public IMongoCollection<ConfigurationRecord> Collection { get; } = collection;
+    public string DocumentId { get; } = documentId;
+    public ILogger<MongoConfigurationLoader> Logger { get; } = logger;
+
+    public string CollectionName => Collection.CollectionNamespace.CollectionName;
 
     public async Task<ConfigurationRecord?> SearchAsync(CancellationToken cancellationToken)
     {

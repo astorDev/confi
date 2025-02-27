@@ -10,21 +10,23 @@ builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
 // v1:
 
-// builder.AddMongoConfiguration(documentId: "simple");
+// builder.Services.AddMongoCollection<ConfigurationRecord>("configs");
+// builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
+
+// builder.AddBackgroundConfiguration(
+//     MongoConfigurationLoader.Key("simple"),
+//     sp => {
+//         var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>()
+//             .GetLoader("simple");
+
+//         return new MongoBackgroundConfigurationWatcher(loader);
+//     }
+// );
 
 // v2:
 
-// builder.AddMongoConfiguration(documentId: "simple", mode: MongoReadingMode.LongPolling);
-
-// v3:
-
 builder.AddMongoConfiguration(documentId: "simple");
 builder.AddMongoConfiguration(documentId: "toggles", mode: MongoReadingMode.LongPolling);
-
-// builder.AddMongoConfiguration(cfg => cfg
-//     .AddLoader("simple", MongoLoadingMode.LongPolling)
-//     .AddLoader("toggles")
-// );
 
 builder.Services.AddMongo(
     "mongodb://localhost:27017/?replicaSet=rs0", 

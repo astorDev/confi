@@ -59,4 +59,3 @@ public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader
         }
     }
 }
-
