@@ -8,7 +8,7 @@ We need a database! MongoDB is JSON-based, so it comes with a dynamic schema and
 
 ## Building the Foundation: Mapping BsonDocument to Configuration
 
-First thing we'll need to do is to create our database model and find a way to fill configuration from it. We'll install `Persic.Mongo` package, which includes `Mongo.Driver`, but comes with a few helpful extensions on top:
+First thing we'll need to do is to create our database model and find a way to fill the configuration from it. We'll install `Persic.Mongo` package, which includes `Mongo.Driver`, but comes with a few helpful extensions on top:
 
 ```sh
 dotnet add package Persic.Mongo
@@ -17,7 +17,7 @@ dotnet add package Persic.Mongo
 To map `BsonDocument` to configuration `Dictionary` we'll need to:
 
 a. Map primitive data structures  
-c. Map inner documents using name of the property and `:`  
+c. Map inner documents using the name of the property and `:`  
 b. Map arrays by appending array property name, `:`, index, and `:` once again  
 
 Here's the code we can end up with:
@@ -63,7 +63,7 @@ public record ConfigurationRecord(string Id, BsonDocument Value) : IMongoRecord<
 }
 ```
 
-Now, when we can translate mongo record to the configuration data, let's figure out how to upload the data to Microsoft's configuration system.
+Now, when we can translate the mongo record to the configuration data, let's figure out how to upload the data to Microsoft's configuration system.
 
 ## Strengthening the Foundation: Loading Mongo Documents to Configuration Stores
 
@@ -73,7 +73,7 @@ In [this article](https://medium.com/@vosarat1995/configuration-provider-in-net-
 dotnet add package Confi.BackgroundStore
 ```
 
-We'll need to create a store per configuration source we want to use, so we'll use `id` of the document we want to read configuration from as a key. We'll use `SetAll` method of the store to upload the data from a `ConfigurationRecord` using the mapping we've implemented earlier. Let's call our class `Loader` and sketch an initial implementation:
+We'll need to create a store per configuration source we want to use, so we'll use the `id` of the document we want to read configuration from as a key. We'll use `SetAll` method of the store to upload the data from a `ConfigurationRecord` using the mapping we've implemented earlier. Let's call our class `Loader` and sketch an initial implementation:
 
 ```csharp
 public class MongoConfigurationLoader( 
