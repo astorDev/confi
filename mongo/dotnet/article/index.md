@@ -8,9 +8,21 @@ We need a database! MongoDB is JSON-based, so it comes with a dynamic schema and
 
 ## Building the Foundation: Mapping BsonDocument to Configuration
 
+First thing we'll need to do is to create our database model and find a way to fill configuration from it. We'll install `Persic.Mongo` package, which includes `Mongo.Driver`, but comes with a few helpful extensions on top:
+
 ```sh
 dotnet add package Persic.Mongo
 ```
+
+To map `BsonDocument` to configuration `Dictionary` we'll need to:
+
+a. Map primitive data structures  
+c. Map inner documents using name of the property and `:`  
+b. Map arrays by appending array property name, `:`, index, and `:` once again  
+
+Here's the code we can end up with:
+
+> `IMongoRecord<string>` is an interface from `Persic.Mongo`, implementing it will come in handy later
 
 ```csharp
 public record ConfigurationRecord(string Id, BsonDocument Value) : IMongoRecord<string>
@@ -51,18 +63,22 @@ public record ConfigurationRecord(string Id, BsonDocument Value) : IMongoRecord<
 }
 ```
 
+Now, when we can translate mongo record to the configuration data, let's figure out how to upload the data to Microsoft's configuration system.
+
 ## Strengthening the Foundation: Loading Mongo Documents to Configuration Stores
+
+In [this article](https://medium.com/@vosarat1995/configuration-provider-in-net-based-on-background-service-b4d8aa1713ad) we've investigated how to connect a background service to the .NET configuration system. Long story short, we need to use singleton-resembling `ConfigurationBackgroundStore`s. We can add them using the `Confi.BackgroundStore` package:
 
 ```sh
 dotnet add package Confi.BackgroundStore
 ```
 
+We'll need to create a store per configuration source we want to use, so we'll use `id` of the document we want to read configuration from as a key. We'll use `SetAll` method of the store to upload the data from a `ConfigurationRecord` using the mapping we've implemented earlier. Let's call our class `Loader` and sketch an initial implementation:
+
 ```csharp
-public class MongoConfigurationLoader(
-    IMongoCollection<ConfigurationRecord> collection, 
+public class MongoConfigurationLoader( 
     ConfigurationBackgroundStore.Factory factory,
-    string documentId,
-    ILogger<MongoConfigurationLoader> logger
+    string documentId
 )
 {
     private const string keyPrefix = "mongo";
@@ -76,6 +92,8 @@ public class MongoConfigurationLoader(
     }
 }
 ```
+
+Our loader should provide us with everything we need to implement a background service for reading configuration from mongo. Let's inject `ILogger<MongoConfigurationLoader>`, `IMongoCollection<ConfigurationRecord>` and implement a couple of helper methods:
 
 ```csharp
 public IMongoCollection<ConfigurationRecord> Collection { get; } = collection;
@@ -91,6 +109,8 @@ public async Task<ConfigurationRecord?> SearchAsync(CancellationToken cancellati
 }
 ```
 
+Finally, to simplify creation of the loader for various `documentId`s let's create a little factory:
+
 ```csharp
 public class Factory(
     IMongoCollection<ConfigurationRecord> collection,
@@ -104,6 +124,8 @@ public class Factory(
     }
 }
 ```
+
+Putting it all together, here's how our code might look like:
 
 ```csharp
 public class MongoConfigurationLoader(
@@ -148,31 +170,40 @@ public class MongoConfigurationLoader(
 }
 ```
 
+Finally, let's move to the fun part and create our background service, glueing everything together.
+
 ## Connecting MongoDB Watch with Configuration Loading
 
+Earlier, in [this article](https://medium.com/@vosarat1995/mongodb-changes-watching-using-c-01c062c8c30c) we've investigated how to watch for changes in a MongoDB collection. Let's use that knowledge together with the `MongoConfigurationLoader` we've implemented earlier. Here's how it might look like:
+
 ```csharp
-private async Task RunWatchingAsync(CancellationToken cancellationToken)
+public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader)
 {
-    loader.Logger.LogInformation("Starting watching collection {collectionName} for changes in document {documentId}", 
-        loader.CollectionName,
-        loader.DocumentId
-    );
-    
-    var changeStream = await loader.Collection.WatchAsync(cancellationToken: cancellationToken);
-    while (await changeStream.MoveNextAsync(cancellationToken: cancellationToken))
+    private async Task RunWatchingAsync(CancellationToken cancellationToken)
     {
-        foreach (var change in changeStream.Current)
+        loader.Logger.LogInformation("Starting watching collection {collectionName} for changes in document {documentId}", 
+            loader.CollectionName,
+            loader.DocumentId
+        );
+
+        var changeStream = await loader.Collection.WatchAsync(cancellationToken: cancellationToken);
+        while (await changeStream.MoveNextAsync(cancellationToken: cancellationToken))
         {
-            loader.Logger.LogDebug("Collection change detected: {0}", change.FullDocument);
-            if (change.FullDocument.Id == loader.DocumentId)
+            foreach (var change in changeStream.Current)
             {
-                loader.Logger.LogInformation("Document `{documentId}` changed - pushing data to configuration store", loader.DocumentId);
-                loader.Upload(change.FullDocument);
+                loader.Logger.LogDebug("Collection change detected: {0}", change.FullDocument);
+                if (change.FullDocument.Id == loader.DocumentId)
+                {
+                    loader.Logger.LogInformation("Document `{documentId}` changed - pushing data to configuration store", loader.DocumentId);
+                    loader.Upload(change.FullDocument);
+                }
             }
         }
     }
 }
 ```
+
+Watching for changes is nice, but even if no changes will happen we'll still need to use the configuration from out mongo collection. Let's implement a method, loading the configuration on our app start.
 
 ```csharp
 private async Task LoadInitialConfigurationAsync(CancellationToken cancellationToken)
@@ -189,6 +220,8 @@ private async Task LoadInitialConfigurationAsync(CancellationToken cancellationT
     }
 }
 ```
+
+Finally, to implement a `BackgroundService` we'll put it all in the `ExecuteAsync`, restarting the process in case of exceptions, while the app is running (while cancellation on the `stoppingToken` was not requested):
 
 ```csharp
 protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -208,6 +241,8 @@ protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     }
 }
 ```
+
+Here's the complete code of out watcher:
 
 ```csharp
 public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader) : BackgroundService
@@ -266,6 +301,8 @@ public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader
     }
 }
 ```
+
+This was a relatively long journey, but now we can finally use the code we've written in an app. Let's get straight to it!
 
 ## Testing Mongo Configuration Watcher using ASP .NET Minimal API
 
