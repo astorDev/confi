@@ -410,7 +410,7 @@ The article is already quite long, so how about instead we'll just use a NuGet p
 dotnet add package Confi.Mongo
 ```
 
-Besides LongPolling the package also comes with a handy registration extension methods. Here's how we can update our code to listen to two configuration documents, but in a different reading modes:
+Besides LongPolling, the package also comes with a handy registration extension methods. Here's how we can update our code to listen to two configuration documents in two different reading modes:
 
 ```csharp
 builder.AddMongoConfiguration(documentId: "simple");
@@ -462,7 +462,7 @@ Here's what you might get, playing around with the configuration:
 
 ![](final-demo.gif)
 
-As you may see, both of the configuration are eventually updated although the LongPolling expectedly takes a longer time to see the changes. Let's reflect for a little bit on what we have done in this article and call it a day!
+As you may see, both of the configurations are eventually updated, although the LongPolling expectedly takes a longer time to see the changes. Let's reflect for a little bit on what we have done in this article and call it a day!
 
 ## TLDR;
 
