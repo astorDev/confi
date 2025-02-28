@@ -69,7 +69,7 @@ Now, when we can translate the mongo record to the configuration data, let's fig
 
 ## Strengthening the Foundation: Loading Mongo Documents to Configuration Stores
 
-In [this article](https://medium.com/@vosarat1995/configuration-provider-in-net-based-on-background-service-b4d8aa1713ad) we've investigated how to connect a background service to the .NET configuration system. Long story short, we need to use singleton-resembling `ConfigurationBackgroundStore`s. We can add them using the `Confi.BackgroundStore` package:
+In [this article](https://medium.com/@vosarat1995/configuration-provider-in-net-based-on-background-service-b4d8aa1713ad), we've investigated how to connect a background service to the .NET configuration system. Long story short, we need to use singleton-resembling `ConfigurationBackgroundStore`s. We can add them using the `Confi.BackgroundStore` package:
 
 ```sh
 dotnet add package Confi.BackgroundStore
@@ -172,7 +172,7 @@ public class MongoConfigurationLoader(
 }
 ```
 
-Finally, let's move to the fun part and create our background service, glueing everything together.
+Finally, let's move to the fun part and create our background service, gluing everything together.
 
 ## Connecting MongoDB Watch with Configuration Loading
 
@@ -205,7 +205,7 @@ public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader
 }
 ```
 
-Watching for changes is nice, but even if no changes will happen we'll still need to use the configuration from out mongo collection. Let's implement a method, loading the configuration on our app start.
+Watching for changes is nice, but even if no changes will happen, we'll still need to use the configuration from our mongo collection. Let's implement a method, loading the configuration on our app start.
 
 ```csharp
 private async Task LoadInitialConfigurationAsync(CancellationToken cancellationToken)
@@ -244,7 +244,7 @@ protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 }
 ```
 
-Here's the complete code of out watcher:
+Here's the complete code of our watcher:
 
 ```csharp
 public class MongoBackgroundConfigurationWatcher(MongoConfigurationLoader loader) : BackgroundService
@@ -308,7 +308,7 @@ This was a relatively long journey, but now we can finally use the code we've wr
 
 ## Testing Mongo Configuration Watcher using ASP .NET Minimal API
 
-Let's setup MongoDB first, for the watching functionality we need to have replica set enabled. I've covered the setup in depth in the [dedicated article](https://medium.com/@vosarat1995/mongodb-changes-watching-using-c-01c062c8c30c). Here we'll just use the two files needed: `init.js`:
+Let's set up MongoDB first! For the watching functionality, we need to have replica set enabled. I've covered the setup in depth in the [dedicated article](https://medium.com/@vosarat1995/mongodb-changes-watching-using-c-01c062c8c30c). Here we'll just use the two files needed: `init.js`:
 
 ```js
 rs.initiate({
@@ -338,7 +338,7 @@ Now, after running `docker compose up -d` we'll get our database running. Let's 
 dotnet new web
 ```
 
-To get up and running we'll need to inject MongoDB with our `ConfigurationRecord` collection, inject our `MongoConfigurationLoader.Factory`, and setup background configuration with key from our loader, paired with the `MongoBackgroundConfigurationWatcher`. Here's the code:
+To get up and running, we'll need to inject MongoDB with our `ConfigurationRecord` collection, inject our `MongoConfigurationLoader.Factory`, and set up background configuration with key from our loader, paired with the `MongoBackgroundConfigurationWatcher`. Here's the code:
 
 ```csharp
 builder.Services.AddMongoCollection<ConfigurationRecord>("configs");
@@ -360,7 +360,7 @@ builder.Services.AddMongo(
 );
 ```
 
-And probably the easiest way to test this would be to create an endpoint, updating mongo record, waiting for the changes to propagate and then reading the data from the updated configuration:
+And probably the easiest way to test this would be to create an endpoint, updating the mongo record, waiting for the changes to propagate, and then reading the data from the updated configuration:
 
 ```csharp
 app.MapPut("simple/config", async (IMongoCollection<ConfigurationRecord> collection, IConfiguration configuration, JsonElement body) => {
