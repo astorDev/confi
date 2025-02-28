@@ -14,8 +14,8 @@ builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 // builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
 
 // builder.AddBackgroundConfiguration(
-//     MongoConfigurationLoader.Key("simple"),
-//     sp => {
+//     key: MongoConfigurationLoader.Key("simple"),
+//     factory: sp => {
 //         var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>()
 //             .GetLoader("simple");
 

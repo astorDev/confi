@@ -306,21 +306,47 @@ This was a relatively long journey, but now we can finally use the code we've wr
 
 ## Testing Mongo Configuration Watcher using ASP .NET Minimal API
 
-> If you already have a web project for the code earlier I still recommend creating a new project and adding the first one as a reference. You'll see why later.
+Let's setup MongoDB first, for the watching functionality we need to have replica set enabled. I've covered the setup in depth in the [dedicated article](https://medium.com/@vosarat1995/mongodb-changes-watching-using-c-01c062c8c30c). Here we'll just use the two files needed: `init.js`:
+
+```js
+rs.initiate({
+    _id: "rs0",
+    members: [
+        { _id: 0, host: "localhost:27017" }
+    ]
+});
+```
+
+And `compose.yml`:
+
+```yml
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    command: mongod --replSet rs0
+    volumes:
+      - ./init.js:/docker-entrypoint-initdb.d/init.js
+```
+
+Now, after running `docker compose up -d` we'll get our database running. Let's now create an ASP .NET project to test our configuration reader:
 
 ```sh
 dotnet new web
 ```
+
+To get up and running we'll need to inject MongoDB with our `ConfigurationRecord` collection, inject our `MongoConfigurationLoader.Factory`, and setup background configuration with key from our loader, paired with the `MongoBackgroundConfigurationWatcher`. Here's the code:
 
 ```csharp
 builder.Services.AddMongoCollection<ConfigurationRecord>("configs");
 builder.Services.AddSingleton<MongoConfigurationLoader.Factory>();
 
 builder.AddBackgroundConfiguration(
-    MongoConfigurationLoader.Key(documentId),
-    sp => {
+    key: MongoConfigurationLoader.Key("simple"),
+    factory: sp => {
         var loader = sp.GetRequiredService<MongoConfigurationLoader.Factory>()
-            .GetLoader(documentId);
+            .GetLoader("simple");
 
         return new MongoBackgroundConfigurationWatcher(loader);
     }
@@ -331,6 +357,8 @@ builder.Services.AddMongo(
     "confi-playground"
 );
 ```
+
+And probably the easiest way to test this would be to create an endpoint, updating mongo record, waiting for the changes to propagate and then reading the data from the updated configuration:
 
 ```csharp
 app.MapPut("simple/config", async (IMongoCollection<ConfigurationRecord> collection, IConfiguration configuration, JsonElement body) => {
@@ -351,7 +379,9 @@ app.MapPut("simple/config", async (IMongoCollection<ConfigurationRecord> collect
 });
 ```
 
-`dotnet run`
+After putting it all together and starting things up with `dotnet run`, let's send a request:
+
+> I'll use httpyac for the demonstration. I have a [dedicated article about it](https://medium.com/@vosarat1995/best-postman-alternative-5890e3e9ddc7), but it should look intuitive anyway.
 
 > Don't forget to adjust the port, based on what you have.
 
@@ -364,18 +394,30 @@ PUT http://localhost:5051/simple/config
 }
 ```
 
+Here's how the result might look like:
+
 ![](simple-demo.gif)
 
+Congratulations! We've enabled using MongoDB documents as a configuration source. But the code is still verbose and we have one other thing to improve - let's do it in the final section.
+
 ## Adding Long-Polling and Multiple Sources Support via a NuGet Package
+
+As you may have noticed, enabling MongoDB replica set is quite a challenge. What we can do is to implement another background service, that just reads the records periodically and updates the configuration in case some changes happen. 
+
+The article is already quite long, so how about instead we'll just use a NuGet package, that has already implemented the `LongPolling` `MongoReadingMode`:
 
 ```sh
 dotnet add package Confi.Mongo
 ```
 
+Besides LongPolling the package also comes with a handy registration extension methods. Here's how we can update our code to listen to two configuration documents, but in a different reading modes:
+
 ```csharp
 builder.AddMongoConfiguration(documentId: "simple");
 builder.AddMongoConfiguration(documentId: "toggles", mode: MongoReadingMode.LongPolling);
 ```
+
+Let's also implement a test method for the second configuration source:
 
 ```csharp
 app.MapPut("toggles/config", async (IMongoCollection<ConfigurationRecord> collection, IConfiguration configuration, JsonElement body) => {
@@ -400,6 +442,8 @@ app.MapPut("toggles/config", async (IMongoCollection<ConfigurationRecord> collec
 });
 ```
 
+Let's create an http test as well:
+
 ```http
 ###
 PUT http://localhost:5051/toggles/config
@@ -414,7 +458,11 @@ PUT http://localhost:5051/toggles/config
 }
 ```
 
+Here's what you might get, playing around with the configuration:
+
 ![](final-demo.gif)
+
+As you may see, both of the configuration are eventually updated although the LongPolling expectedly takes a longer time to see the changes. Let's reflect for a little bit on what we have done in this article and call it a day!
 
 ## TLDR;
 
