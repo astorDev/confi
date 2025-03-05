@@ -2,5 +2,7 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2a40ad57_002D0662_002D46ba_002D843e_002D5fb021516ee7/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ReturnValidMetadata" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;MSTest::587D2B60-C12F-4D14-8411-9EF787DD9E27::net9.0::Confi.Manager.Tests.AboutShould.ReturnValidMetadata&lt;/TestId&gt;
+    &lt;TestId&gt;MSTest::C5A1840F-6E9F-42EA-880F-73EC68E44A48::net9.0::Confi.Mongo.Tests.ConfigurationMapping.ProperlyMapStringValue&lt;/TestId&gt;
+    &lt;TestId&gt;MSTest::C5A1840F-6E9F-42EA-880F-73EC68E44A48::net9.0::Confi.Mongo.Tests.ConfigurationMapping.Versatile&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

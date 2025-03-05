@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\protocol\Confi.Manager.Protocol.csproj" />
     <ProjectReference Include="..\endpoints\Confi.Manager.Endpoints.csproj" />
   </ItemGroup>
 

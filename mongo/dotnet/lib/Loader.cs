@@ -32,7 +32,7 @@ public record ConfigurationRecord(string Id, BsonDocument Value) : IMongoRecord<
             }
             else
             {
-                configs[prefix + pair.Name] = pair.Value.ToJson();
+                configs[prefix + pair.Name] = pair.Value.ToString()!;
             }
         }
     }

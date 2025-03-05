@@ -17,7 +17,7 @@ builder.Configuration.AddFluentEnvironmentVariables();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddMongo(
-    sp => new MongoClient(builder.Configuration.GetRequiredValue("ConnectionStrings:Mongo")), 
+    _ => new MongoClient(builder.Configuration.GetRequiredValue("ConnectionStrings:Mongo")), 
     "confi-manager"
 )
 .AddConfiManagerCollections();
@@ -36,7 +36,7 @@ app.MapGet($"/{Uris.About}", async (IHostEnvironment env, IMongoDatabase mongoDa
     Description: "Confi.Manager",
     Version: typeof(Program).Assembly!.GetName().Version!.ToString(),
     Environment: env.EnvironmentName,
-    Dependencies: new Dictionary<string, object> {
+    Dependencies: new() {
         [ "mongo" ] = await mongoDatabase.Ping().ToJsonDocument()
     }
 ));
