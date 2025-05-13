@@ -10,7 +10,7 @@ public record ConfigurationRecord(
     BsonDocument Value
 ) : IMongoRecord<string>;
 
-public static class ConfigurationHelper
+public static class ConfigurationEndpoints
 {
     public static IEndpointRouteBuilder MapConfiguration(this IEndpointRouteBuilder endpoints)
     {
@@ -32,7 +32,7 @@ public static class ConfigurationHelper
             Value: configuration.ToBsonDocument()
         ));
 
-        return await AppHelper.GetApp(
+        return await AppEndpoints.GetApp(
             appId,
             schemaCollection,
             nodesCollection,
@@ -40,19 +40,21 @@ public static class ConfigurationHelper
         );
     }
 
-    public static async Task EnsureAppConfigurationIsSet(
+    public static async Task<ConfigurationRecord> GetOrSetAppConfiguration(
         this IMongoCollection<ConfigurationRecord> mongoCollection,
         string appId,
-        BsonDocument configuration)
+        JsonElement configuration)
     {
         var existing = await mongoCollection.Search(appId);
+        if (existing != null) return existing;
 
-        if (existing == null)
-        {
-            await mongoCollection.Put(new ConfigurationRecord(
-                Id: appId,
-                Value: configuration
-            ));
-        }
+        var set = new ConfigurationRecord(
+            Id: appId,
+            Value: configuration.ToBsonDocument()
+        );
+        
+        await mongoCollection.Put(set);
+
+        return set;
     }
 }

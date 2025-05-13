@@ -49,7 +49,7 @@ public static class NodeHelper
         await nodeCollection.Put(record);
 
         await schemasCollection.EnsureSchemaIsUpToDate(candidate, appId);
-        await configurationCollection.EnsureAppConfigurationIsSet(appId, record.Configuration);
+        await configurationCollection.GetOrSetAppConfiguration(appId, candidate.Configuration);
 
         return record.ToProtocol();
     }
@@ -85,9 +85,11 @@ public static class NodeHelper
 
 public static class VersionComparer
 {
-    public static bool IsNewerThan(this string candidate, string current)
+    public static async Task<List<NodeRecord>> ListBy(this IMongoCollection<NodeRecord> mongoCollection, string appId)
     {
-        return candidate.CompareTo(current) >= 0;
+        return await mongoCollection
+            .Find(x => x.AppId == appId)
+            .ToListAsync();
     }
 }
 

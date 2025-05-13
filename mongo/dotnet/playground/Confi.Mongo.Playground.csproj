@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="MongoDb.Driver" Version="3.1.0" />
-    <PackageReference Include="Persic.Mongo" Version="2025.101.127.2" />
   </ItemGroup>
 
   <ItemGroup>

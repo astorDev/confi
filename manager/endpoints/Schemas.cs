@@ -1,3 +1,4 @@
+using System.Text.Json;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Persic;
@@ -14,17 +15,30 @@ public static class SchemaHelper
 {
     public static async Task EnsureSchemaIsUpToDate(this IMongoCollection<SchemeRecord> schemaCollection, NodeCandidate nodeCandidate, string appId)
     {
+        await EnsureSchemaIsUpToDate(
+            schemaCollection,
+            nodeCandidate.Version,
+            nodeCandidate.Schema,
+            appId
+        );
+    }
+
+    public static async Task<SchemeRecord> EnsureSchemaIsUpToDate(this IMongoCollection<SchemeRecord> schemaCollection, string candidateVersion, JsonElement candidateSchema, string appId)
+    {
         var currentAppSchema = await schemaCollection.Search(appId);
 
-        if (currentAppSchema == null || currentAppSchema.Version != nodeCandidate.Version)
+        if (!Version.ImpliesUpdate(currentVersion: currentAppSchema?.Version, candidateVersion))
         {
-            var newSchema = new SchemeRecord(
-                Id: appId,
-                Version: nodeCandidate.Version,
-                Schema: nodeCandidate.Schema.ToBsonDocument()
-            );
-
-            await schemaCollection.Put(newSchema);
+            return currentAppSchema!;
         }
+
+        var newSchema = new SchemeRecord(
+            Id: appId,
+            Version: candidateVersion,
+            Schema: candidateSchema.ToBsonDocument()
+        );
+
+        await schemaCollection.Put(newSchema);
+        return newSchema;
     }
 }

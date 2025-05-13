@@ -1,45 +1,72 @@
 using System.Collections;
-using System.Threading.Tasks;
+using System.Text.Json;
 using MongoDB.Driver;
 using Nist;
 
 namespace Confi.Manager;
 
-public static class AppHelper
+public static class AppEndpoints
 {
-    public static IEndpointRouteBuilder MapApps(this IEndpointRouteBuilder endpoints) 
+    public static IEndpointRouteBuilder MapApps(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("{appId}", GetApp);
+        endpoints.MapPut("{appId}", PutApp);
 
         return endpoints;
     }
 
+    public static async Task<App> PutApp(
+        string appId,
+        AppCandidate candidate,
+        IMongoCollection<SchemeRecord> schemaCollection,
+        IMongoCollection<ConfigurationRecord> configurationCollection,
+        IMongoCollection<NodeRecord> nodeCollection
+    )
+    {
+        var schemeRecord = await schemaCollection.EnsureSchemaIsUpToDate(
+            candidate.Version,
+            candidate.Schema,
+            appId
+        );
+
+        var configurationRecord = await configurationCollection.GetOrSetAppConfiguration(
+            appId,
+            candidate.Configuration
+        );
+
+        var nodeRecords = await nodeCollection.ListBy(
+            appId: appId
+        );
+
+        var app = AppAssembler.Assemble(
+            schemeRecord,
+            configurationRecord,
+            nodeRecords
+        );
+
+        return app;
+    }
+
     public static async Task<App> GetApp(
-        string appId, 
+        string appId,
         IMongoCollection<SchemeRecord> schemasCollection,
         IMongoCollection<NodeRecord> nodesCollection,
         IMongoCollection<ConfigurationRecord> configurationsCollection)
     {
-        var schemeRecord = await schemasCollection.Search(appId) 
+        var schemeRecord = await schemasCollection.Search(appId)
             ?? throw new AppNotFoundException(appId);
 
         var configurationRecord = await configurationsCollection.Search(appId)
             ?? throw new AppNotFoundException(appId);
 
-        var nodeRecords = nodesCollection
+        var nodeRecords = await nodesCollection
             .Find(x => x.AppId == appId)
-            .ToList();
-        
-        return new App(
-            schemeRecord.Id,
-            nodeRecords.ToDictionary(
-                x => x.Id, 
-                x => new NodeState(
-                    Status: x.DetermineStatus(configurationRecord.Value)
-                )
-            ),
-            schemeRecord.Schema.ToJsonElement(),
-            configurationRecord.Value.ToJsonElement()
+            .ToListAsync();
+
+        return AppAssembler.Assemble(
+            schemeRecord,
+            configurationRecord,
+            nodeRecords
         );
     }
 
@@ -53,6 +80,25 @@ public static class AppHelper
     }
 }
 
+public class AppAssembler
+{
+    public static App Assemble(SchemeRecord schemeRecord, ConfigurationRecord configurationRecord, IEnumerable<NodeRecord> nodeRecords)
+    {
+        return new App(
+            schemeRecord.Id,
+            nodeRecords.ToDictionary(
+                x => x.Id,
+                x => new NodeState(
+                    Status: x.DetermineStatus(configurationRecord.Value)
+                )
+            ),
+            schemeRecord.Schema.ToJsonElement(),
+            configurationRecord.Value.ToJsonElement()
+        );
+    }
+
+}
+
 public class AppNotFoundException(string appId) : Exception
 {
     public override IDictionary Data => new Dictionary<string, string> {
@@ -61,3 +107,10 @@ public class AppNotFoundException(string appId) : Exception
 
     public Error ToError() => Errors.AppNotFound;
 }
+
+// TO DO: Use app candidate from protocol
+public record AppCandidate(
+    JsonElement Schema,
+    JsonElement Configuration,
+    string Version
+);

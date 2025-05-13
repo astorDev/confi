@@ -3,6 +3,12 @@ using Nist;
 
 namespace Confi.Manager;
 
+public record AppCandidate(
+    JsonElement Schema, 
+    JsonElement Configuration,
+    string Version
+);
+
 public record App(
     string Id,
     Dictionary<string, NodeState> Nodes,

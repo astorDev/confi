@@ -1,0 +1,60 @@
+PUT /pay-page
+
+{
+    "version" : "1.0",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "Currencies": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "Name"
+                    ]
+                }
+            },
+            "Networks": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "Name"
+                    ]
+                }
+            },
+            "required": [
+                "Currencies",
+                "Networks"
+            ]
+        }
+    },
+    "configuration": {
+        "Currencies": {
+            "USDC": {
+                "Name": "USDC"
+            },
+            "ETH": {
+                "Name": "ETH"
+            }
+        },
+        "Networks": {
+            "ETHEREUM_SEPOLIA": {
+                "Name": "Ethereum (Sepolia)"
+            },
+            "BASE_SEPOLIA": {
+                "Name": "Base (Sepolia)"
+            }
+        }
+    }
+}
