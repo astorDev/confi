@@ -1,7 +1,7 @@
 on:
   push:
     paths:
-      - 'envs/fluenv/**'
+      - 'envs/fluenv/lib/**'
       - '.github/workflows/fluenv-nuget.yml'
   workflow_dispatch:
 
@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: astorDev/versy/calver/nuget@main
         with:
-          project: envs/fluent/Confi.Fluenv
+          project: envs/fluenv/lib/Confi.Fluenv
           nuget-api-key: ${{ secrets.NUGET_API_KEY }}
