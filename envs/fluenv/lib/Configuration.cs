@@ -65,5 +65,6 @@ public class FluentEnvironmentVariablesConfiguration
 
 public static class ConfigurationBuilderExtensions
 {
-    public static IConfigurationBuilder AddFluentEnvironmentVariables(this IConfigurationBuilder builder, string prefix = "") => builder.Add(new FluentEnvironmentVariablesConfiguration.Source(prefix));
+    public static IConfigurationBuilder AddFluentEnvironmentVariables(this IConfigurationBuilder builder, string prefix = "") =>
+        builder.Add(new FluentEnvironmentVariablesConfiguration.Source(prefix));
 }
