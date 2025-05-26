@@ -1,0 +1,16 @@
+on:
+  push:
+    paths:
+      - 'envs/fluenv/**'
+      - '.github/workflows/fluenv-nuget.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Pack & Publish nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/nuget@main
+        with:
+          project: envs/fluent/Confi.Fluenv
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
