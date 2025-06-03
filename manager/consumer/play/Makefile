@@ -9,6 +9,10 @@ prep:
 prep-build:
 	make -C ../../ build
 
+reprep:
+	make prep-build
+	make prep
+
 kill:
 	kill `lsof -t -i:53872`
 
