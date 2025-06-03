@@ -12,7 +12,6 @@ public class JsonSchema(JsonNode inner)
     public Dictionary<string, JsonSchema> Properties => properties ??= inner.GetPropertiesDictionary();
 
     public JsonSchema? AdditionalProperties => Optional(inner[AdditionalPropertiesKey]);
-
     public static JsonSchema? Optional(JsonNode? inner) => inner == null ? null : new JsonSchema(inner);
 
     public string Type => inner.GetSchemaType();
@@ -42,12 +41,6 @@ public static class JsonSchemaExtensions
     public const string Required = "required";
     public const string Type = "type";
 
-    public static JsonElement AsJsonElement(this JsonObject jsonObj)
-    {
-        var rawJson = jsonObj.ToJsonString();
-        return JsonDocument.Parse(rawJson).RootElement;
-    }
-
     public static string GetSchemaType(this JsonNode schema)
     {
         try
@@ -70,17 +63,6 @@ public static class JsonSchemaExtensions
             var propertyValue = property.Value ?? throw new("Schema property value cannot be null");
             yield return (property.Key, new JsonSchema(propertyValue));
         }
-    }
-
-    public static JsonSchema? GetAdditionalProperties(this JsonNode inner)
-    {
-        var additionalProperties = inner[JsonSchema.AdditionalPropertiesKey];
-        if (additionalProperties == null)
-        {
-            return null;
-        }
-
-        return new JsonSchema(additionalProperties!);
     }
 
     public static Dictionary<string, JsonSchema> GetPropertiesDictionary(this JsonNode inner)
