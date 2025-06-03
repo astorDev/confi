@@ -8,7 +8,7 @@
       "applicationUrl": "http://localhost:53872",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONFI_MANAGER_URL" : "http://localhost:40398"
+        "CONFI_MANAGER_URL" : "http://localhost:40398/consumed/"
       }
     }
   }

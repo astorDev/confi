@@ -41,7 +41,10 @@ app.MapGet($"/{Uris.About}", async (IHostEnvironment env, IMongoDatabase mongoDa
     }
 ));
 
-app.MapConfiManager();
+var prefix = app.Configuration["Prefix"];
+_ = string.IsNullOrWhiteSpace(prefix)
+    ? app.MapConfiManager()
+    : app.MapGroup(prefix).MapConfiManager();
 
 app.Run();
 

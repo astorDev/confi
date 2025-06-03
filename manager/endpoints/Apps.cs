@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Text.Json;
 using MongoDB.Driver;
 using Nist;
 
@@ -9,6 +8,10 @@ public static class AppEndpoints
 {
     public static IEndpointRouteBuilder MapApps(this IEndpointRouteBuilder endpoints)
     {
+        endpoints.MapGet(Uris.App("{appId}"), GetApp);
+        endpoints.MapPut(Uris.App("{appId}"), PutApp);
+
+        // backward-compatibility
         endpoints.MapGet("{appId}", GetApp);
         endpoints.MapPut("{appId}", PutApp);
 
@@ -107,10 +110,3 @@ public class AppNotFoundException(string appId) : Exception
 
     public Error ToError() => Errors.AppNotFound;
 }
-
-// TO DO: Use app candidate from protocol
-public record AppCandidate(
-    JsonElement Schema,
-    JsonElement Configuration,
-    string Version
-);

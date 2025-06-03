@@ -11,6 +11,7 @@ services:
       dockerfile: host/Dockerfile
     environment:
       - CONNECTION_STRINGS_MONGO=mongodb://db:27017/
+      - PREFIX=${CONFI_MANAGER_PREFIX}
     ports:
       - "40398:8080"
   db:

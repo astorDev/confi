@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confi.Manager.Protocol" Version="2025.105.113.6" />
+    <PackageReference Include="Confi.Manager.Protocol" Version="2025.106.103.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
     <PackageReference Include="Nist.Registration" Version="2025.104.116.32" />

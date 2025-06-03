@@ -4,7 +4,7 @@ run:
 	dotnet run
 
 prep:
-	make -C ../../ assemble
+	export CONFI_MANAGER_PREFIX=consumed && make -C ../../ assemble
 
 prep-build:
 	make -C ../../ build

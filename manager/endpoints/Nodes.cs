@@ -10,9 +10,9 @@ public static class NodeHelper
 {
     public static IEndpointRouteBuilder MapNodes(this IEndpointRouteBuilder endpoints) 
     {
-        // endpoints.MapPut(Uris.Node("{appId}", "{nodeId}"), PutNode);
-        // endpoints.MapGet(Uris.Node("{appId}", "{nodeId}"), GetNode);
-        // endpoints.MapDelete(Uris.Node("{appId}", "{nodeId}"), DeleteNode);
+        endpoints.MapPut(Uris.Node("{appId}", "{nodeId}"), PutNode);
+        endpoints.MapGet(Uris.Node("{appId}", "{nodeId}"), GetNode);
+        endpoints.MapDelete(Uris.Node("{appId}", "{nodeId}"), DeleteNode);
 
         // backward-compatibility
         endpoints.MapPut("{appId}/nodes/{nodeId}", PutNode);

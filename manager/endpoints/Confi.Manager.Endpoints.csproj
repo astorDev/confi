@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confi.Manager.Protocol" Version="2025.102.124.2-manager-nuget" />
+    <PackageReference Include="Confi.Manager.Protocol" Version="2025.106.103.9" />
     <PackageReference Include="Persic.Mongo" Version="2025.101.127.2" />
   </ItemGroup>
 
