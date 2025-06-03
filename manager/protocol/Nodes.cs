@@ -26,7 +26,7 @@ public class NodeStatus {
 
 public partial class Uris {
     public static string Nodes = "nodes";
-    public static string Node(string appId, string nodeId) => $"{appId}/{Nodes}/{nodeId}";
+    public static string Node(string appId, string nodeId) => $"{App(appId)}/{Nodes}/{nodeId}";
 }
 
 public partial class Client {

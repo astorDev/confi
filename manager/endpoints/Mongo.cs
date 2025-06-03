@@ -13,18 +13,18 @@ public static class Mongo
         return JsonDocument.Parse(bson.ToJson());
     }
 
-    public static JsonElement ToJsonElement(this BsonDocument bson) => 
+    public static JsonElement ToJsonElement(this BsonDocument bson) =>
         JsonDocument.Parse(bson.ToJson()).RootElement;
 
     public static BsonDocument ToBsonDocument(this JsonElement json) =>
         BsonDocument.Parse(json.GetRawText());
 
-    public static bool Equivalent(this BsonDocument bson, BsonDocument other) => 
+    public static bool Equivalent(this BsonDocument bson, BsonDocument other) =>
         bson.ToJson() == other.ToJson();
 
     public static async Task<TMongoRecord?> Search<TMongoRecord>(this IMongoCollection<TMongoRecord> collection, string id)
         where TMongoRecord : IMongoRecord<string>
     {
         return await collection.Find(r => r.Id == id).FirstOrDefaultAsync();
-    }       
+    }
 }

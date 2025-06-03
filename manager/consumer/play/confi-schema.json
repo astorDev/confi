@@ -1,0 +1,37 @@
+{
+    "type": "object",
+    "properties": {
+        "Currencies": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "Name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "Name"
+                ]
+            }
+        },
+        "Networks": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "Name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "Name"
+                ]
+            }
+        },
+        "required": [
+            "Currencies",
+            "Networks"
+        ]
+    }
+}

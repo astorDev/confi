@@ -8,18 +8,17 @@ using MongoDB.Driver;
 public class Test
 {
     public static readonly IMongoDatabase MongoDatabase = A.Fake<IMongoDatabase>();
-    protected WebApplicationFactory Factory { get; } =  new();
-    protected Client Client { get;  }
+    protected WebApplicationFactory Factory { get; } = new();
+    protected Client Client { get; }
 
     protected Test()
     {
-        var services = new ServiceCollection();
-        services.AddLogging(l => l.AddSimpleConsole(c => c.SingleLine = true));
-        var logger = services.BuildServiceProvider().GetRequiredService<ILogger<Confi.Manager.Client>>();
-        
-        Client = new(Factory.CreateClient(), logger);
+        Client = new(
+            Factory.CreateClient(),
+            TestLogger.Of<Client>()
+        );
     }
-    
+
     public class WebApplicationFactory : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -31,5 +30,21 @@ public class Test
                 s.AddSingleton(MongoDatabase);
             });
         }
+    }
+}
+
+public class TestLogger
+{
+    private static IServiceProvider serviceProvider = buildServiceProvider();
+    private static IServiceProvider buildServiceProvider()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging(l => l.AddSimpleConsole(c => c.SingleLine = true));
+        return services.BuildServiceProvider();
+    }
+
+    public static ILogger<T> Of<T>()
+    {
+        return serviceProvider.GetRequiredService<ILogger<T>>();
     }
 }

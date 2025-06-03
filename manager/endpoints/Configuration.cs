@@ -14,6 +14,10 @@ public static class ConfigurationEndpoints
 {
     public static IEndpointRouteBuilder MapConfiguration(this IEndpointRouteBuilder endpoints)
     {
+        // TO DO: replace with proper protocol thing
+        // endpoints.MapPut(Uris.AppConfiguration("{appId}"), PutConfiguration);
+
+        // backward-compatibility
         endpoints.MapPut("{appId}/configuration", PutConfiguration);
 
         return endpoints;
