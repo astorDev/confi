@@ -29,3 +29,6 @@ replay:
 
 play:
 	bash -c -i 'make run-api & sleep 5 && make yac && fg'
+
+run-ui:
+	npm run dev --prefix ui

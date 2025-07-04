@@ -36,3 +36,6 @@ PATCH /apps/aurora
 
 ### 4. Get the list of apps again
 GET /apps
+
+### 5. Ensure the app name is shown in detailed query
+GET /apps/aurora
