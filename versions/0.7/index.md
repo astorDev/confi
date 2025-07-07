@@ -1,8 +1,8 @@
-- [ ] `Confi.Manager.UI` <VERSION>
+- [x] `Confi.Manager.UI`
     - [x] Configuration Editing Display
-- [ ] `Confi.Manager`
+- [x] `Confi.Manager`
     - [x] Mock Demo Configurations
-    - [ ] Apps List Endpoints. [Details](#apps-list-endpoints)
+    - [x] Apps List Endpoints. [Details](#apps-list-endpoints)
 
 ## App List Endpoints
 

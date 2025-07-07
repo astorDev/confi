@@ -1,0 +1,10 @@
+- [ ] `Confi.Json` <VERSION>
+    - [ ] `AddJson("http://source.com/json", refreshInterval: TimeSpan.FromSeconds(2))`
+    - [ ] `AddJson("http://source.com/json", webhookUrl: "ws://source.com/json")`
+- [ ] `Confi.Manager` <VERSION>
+    - [ ] Node `ConsiderDeadAfter` support
+    - [ ] `DELETE nodes?appId={appId}`
+    - [ ] `DELETE apps/{appId}`
+- [ ] `Confi.Fluenv` <VERSION>
+    - [ ] `AddFluentEnvFile`
+- [ ] Consider: Casing for Options (may become an article)
