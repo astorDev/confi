@@ -20,8 +20,7 @@ public static class JsonStringConfiguration
     }
 }
 
-
-public static class Registration
+public static partial class Registration
 {
     public static IConfigurationBuilder AddJsonString(this IConfigurationBuilder builder, string json)
     {
