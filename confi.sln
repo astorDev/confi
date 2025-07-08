@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Json", "json\lib\Conf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Json.Playground", "json\play\Confi.Json.Playground.csproj", "{A44B9D52-C994-407B-B144-411597270024}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Json.Stub", "json\stub\Confi.Json.Stub.csproj", "{D41E2E9B-B186-4181-8702-D39C784551B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{A44B9D52-C994-407B-B144-411597270024}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A44B9D52-C994-407B-B144-411597270024}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A44B9D52-C994-407B-B144-411597270024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D41E2E9B-B186-4181-8702-D39C784551B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D41E2E9B-B186-4181-8702-D39C784551B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D41E2E9B-B186-4181-8702-D39C784551B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D41E2E9B-B186-4181-8702-D39C784551B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,5 +170,6 @@ Global
 		{5B7664ED-42FE-4884-81B1-83F225FD89A4} = {2CFBB2CD-4C07-4FC9-A8ED-17AFCC3340F7}
 		{FC17AA69-80A7-4B39-AD52-F51DE50182EA} = {2AE2E18B-B939-4531-9DE2-E8F34DB5AEA3}
 		{A44B9D52-C994-407B-B144-411597270024} = {2AE2E18B-B939-4531-9DE2-E8F34DB5AEA3}
+		{D41E2E9B-B186-4181-8702-D39C784551B2} = {2AE2E18B-B939-4531-9DE2-E8F34DB5AEA3}
 	EndGlobalSection
 EndGlobal
