@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Configuration;
 
-namespace Confi.Json;
+namespace Confi;
 
 public static class JsonStringConfiguration
 {
