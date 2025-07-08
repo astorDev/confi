@@ -1,4 +1,4 @@
-using Confi.Json;
+using Confi;
 
 var builder = WebApplication.CreateBuilder(args);
 
