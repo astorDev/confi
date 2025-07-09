@@ -22,7 +22,6 @@ record ConfiConfiguration(
     string AppId,
     TimeSpan RedeclareInterval,
     TimeSpan TimeToLiveForStale // by default = RedeclareInterval * 3
-    
 );
 
 // builder.Configuration.AddJson("ConnectionStrings:Confi") 
