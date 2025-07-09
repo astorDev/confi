@@ -1,0 +1,39 @@
+PUT /apps/thor/nodes/{{ $guid }}
+
+{
+    "version" : "{{ $datetime 'YYYY.1MM.1DD' }}",
+    "configuration" : {
+        "nickname": "Tornado"
+    },
+    "schema" : {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Thor Configuration",
+        "type": "object",
+        "properties": {
+            "nickname": {
+                "type": "string",
+                "description": "The nickname for the Thor."
+            }
+        },
+        "required": [
+            "nickname"
+        ]
+    }
+}
+
+###
+GET /apps/thor/configuration
+
+###
+PUT /apps/thor/configuration
+
+{
+    "nickname" : "Tornado"
+}
+
+###
+PUT /apps/thor/configuration
+
+{
+    "nickname" : "Toreodore"
+}

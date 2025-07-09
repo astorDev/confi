@@ -7,9 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Confi.Json" Version="2025.107.108.8" />
     <PackageReference Include="Confi.Manager.Protocol" Version="2025.106.103.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
     <PackageReference Include="Nist.Registration" Version="2025.104.116.32" />
     <PackageReference Include="Versy" Version="2025.103.115.169" />
   </ItemGroup>

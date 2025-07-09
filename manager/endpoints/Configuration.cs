@@ -15,11 +15,21 @@ public static class ConfigurationEndpoints
     public static IEndpointRouteBuilder MapConfiguration(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPut(Uris.AppConfiguration("{appId}"), PutConfiguration);
+        endpoints.MapGet(Uris.AppConfiguration("{appId}"), GetConfiguration);
 
         // backward-compatibility
         endpoints.MapPut("{appId}/configuration", PutConfiguration);
 
         return endpoints;
+    }
+
+    public static async Task<JsonDocument> GetConfiguration(string appId, IMongoCollection<ConfigurationRecord> configurationsCollection
+    )
+    {
+        var configuration = await configurationsCollection.Search(appId);
+        if (configuration == null) throw new AppNotFoundException(appId);
+
+        return configuration.Value.ToJsonDocument();
     }
 
     public static async Task<App> PutConfiguration(
@@ -55,7 +65,7 @@ public static class ConfigurationEndpoints
             Id: appId,
             Value: configuration.ToBsonDocument()
         );
-        
+
         await mongoCollection.Put(set);
 
         return set;

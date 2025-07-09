@@ -32,3 +32,7 @@ play:
 
 run-ui:
 	npm run dev --prefix ui
+
+consumer-play:
+	make -C consumer/play play
+
