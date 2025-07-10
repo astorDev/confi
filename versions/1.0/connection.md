@@ -51,4 +51,11 @@ AddConfi(
     schemaResolution: _ => JsonSchema.FromFile(schemaFileName), //
     schemaFileName: "confi.schema.json" // can be passed from connection string
 );
+
+class ConfiConfiguration
+{
+    Schema = "https"
+    Host = "localhost"
+
+}
 ```
