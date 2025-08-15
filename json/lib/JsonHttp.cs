@@ -44,7 +44,7 @@ public static class JsonHttpConfiguration
     {
         private HttpClientFactory clientFactory;
         private HttpStreamPoller poller;
-        private PolledConfigurationProvider provider;
+        private ConfigurationListener provider;
 
         public EventsDispatcher EventsDispatcher => new(poller);
 
@@ -52,7 +52,7 @@ public static class JsonHttpConfiguration
         {
             clientFactory = new HttpClientFactory();
             poller = new HttpStreamPoller(clientFactory, uri, refreshInterval);
-            provider = new PolledConfigurationProvider(poller);
+            provider = new ConfigurationListener(poller);
         }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)

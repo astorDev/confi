@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Confi;
 
-public class PolledConfigurationProvider : ConfigurationProvider
+public class ConfigurationListener : ConfigurationProvider
 {
-    public PolledConfigurationProvider(ConfigurationPoller poller)
+    public ConfigurationListener(IListenable<IDictionary<string, string?>> listenable)
     {
-        poller.AddListener(config =>
+        listenable.AddListener(config =>
         {
             Data = config;
             OnReload();

@@ -1,21 +1,35 @@
-- [ ] Create Full Confi (Manager) Cycle
-    - [ ] On Start Consumer Sends Node Info
-    - [ ] Consumer Syncs with Confi Host. [Details](#consumer-sync)
-    - [ ] Host Displays an Actual Info.
+- [ ] Consumer Declares AppId, Schema and Value
+- [ ] UI Configuration Value Editing with Schema Validation
+- [ ] Consumer reads configuration by the app id
 
-## Consumer Sync
+## Target
 
-- [ ] Consumer Reads Current Configuration.
-- [ ] Consumer Self-Declared with an Up-To-Date Configuration
+```csharp
+var confiPolling = builder.Configuration.AddConfi("http://localhost:40398/my-app");
+    // registers Confi:AppId and Confi:Url
+    // may call AddJsonHttp("http://localhost:40398/apps/my-app");
 
-#### Is Consumer Sync a Sequential or Parallel Operation?
+// ...
 
-- Does consumer sync is one operation or smth done in parallel
-    - Benefits for parallel
-        - If node push breaks consumer will still get an up to date info
-        - Can use simply `AddJsonHttp`
-        - Sync intervals can be configured separately
-            - In sequential case we can make `PUT /nodes` run once in x (2/3) configuration reads
-    - Benefits for sequential
-        - Normally no outdated state push
-        - ⭐ Allows `Syncing` status (`node.updatedAt` is before (<) `configuration.updatedAt`) - no `unsynced` status in normal flow
+confiPolling.RegisterLogging(app.Services);
+
+app.SelfDeclareInConfi(); 
+    // the method may accept arguments indicating from where to get the schema
+    // e.g. file name or a type (for automatic schema resolution)
+```
+
+Or
+
+```csharp
+builder.AddConfi("http://localhost:40398/my-app");
+    // Accepts arguments from both builder.Configuration.AddConfi and app.SelfDeclare
+    // 
+    // registers Confi:AppId and Confi:Url
+    // 
+    // registers IHostedService, that:
+    // 1. Self-Declares
+    // 2. Polls configuration periodically and on start
+    // 3. Registers logging for poll events
+    // 
+    // For self declaration we both accept 
+```
