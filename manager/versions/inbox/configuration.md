@@ -103,6 +103,8 @@ public static OptionsBuilder<ConfiSettings> AddConfi(this IApplicationBuilder bu
 ```csharp
 public class ConfiConnectionSettings
 {
+    // may use default base url (like `https://confi.live`)
+    // or throw if base url is not present
     public string BaseUrl { get; set;}
 
     [Required("AppId is Required, but wasn't provided. Recommended way to set it is via parameter is Confi Connection String")]
@@ -127,16 +129,44 @@ public record ConfiBuilder(
     OptionsBuilder<ConfiSelfDeclarationSettings> SelfDeclarationOptions
 );
 
-public static ConfiBuilder AddConfi(this IApplicationBuilder builder, string? url)
+public static OptionsBuilder<ConfiSelfDeclarationSettings> ConfigureSelfDeclarationSettings(IServiceCollection services)
+{
+    builder.Services
+        .AddOption<ConfiSelfDeclarationSettings>()
+        .PostConfigure((options, sp) => {
+            if (options.NodeId == null)
+                options.NodeId = builder.Configuration["Confi:NodeId"]
+                    ?? builder.Configuration["Hostname"]
+                    ?? Guid.CreateVersion7();
+        })
+        .PostConfigure((options, sp) => {
+            if (options.AppVersion == null)
+                options.AppVersion = builder.Configuration["Confi:AppVersion"]
+                    ?? builder.Configuration["app"]
+                    ?? sp.GetService<VersionProvider>()?.Get()
+                    ?? "unspecified";
+        })
+        // Can be assigned from UseSchemaFile(string fileName)
+        .PostConfigure(options => {
+            if (options.Schema == null && File.Exists("confi.schema.json"))
+                options.Schema = JsonSchema.FromFile("confi.schema.json")
+        })
+        .ValidateDataAnnotations()
+        // .ValidateOnStart()
+        // not used since we want to allow user to decide. Doesn't really matter
+        ;
+}
+
+public static OptionsBuilder<ConfiSelfDeclarationSettings> AddConfi(this IApplicationBuilder builder, string? url)
 {
     url ?= builder.Configuration("Confi:Url");
-    var parsedUrl = ConfiConnectionString.Parse(url); // throws if appId is not present
+    var connectionSettings = ConfiConnectionSettings.Parse(url); 
 
     builder.Services
-        .AddOptions<ConfiConnectionSettings>(parsedUrl.appId)
+        .AddOptions<ConfiConnectionSettings>(connectionSettings)
         .Configure((options) => {
-            options.BasedUrl = parsedUrl.BaseUrl;
-            options.AppId = parsedUrl.AppId;
+            options.BasedUrl = connectionSettings.BaseUrl;
+            options.AppId = connectionSettings.AppId;
         });
 
     builder.Services

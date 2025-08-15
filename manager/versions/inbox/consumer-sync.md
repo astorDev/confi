@@ -1,7 +1,20 @@
 # Consumer Sync
 
 - [ ] Consumer Reads Current Configuration.
-- [ ] Consumer Self-Declares with an Up-To-Date Configuration
+- [ ] Consumer Self-Declares with an Up-To-Date Configuration.
+
+**Issues:**
+
+- If reading from json http right ahead at first the app will yet be not declared!
+    - Possible solutions: 
+        - Add some sort of "after" argument in json http
+            - accepting `Task` or what?
+            - Issues:
+                - Json configuration will not available before starting (and in the first few sec)
+        - Use sequential background service instead of json http
+            - Issues: 
+                - Binds stuff more tightly
+                - Json configuration will not available before starting (and in the first few sec)
 
 ## Sequential VS Parallel?
 
