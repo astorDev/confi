@@ -80,13 +80,11 @@ public static OptionsBuilder<ConfiSettings> AddConfi(this IApplicationBuilder bu
             if (options.Schema == null && File.Exists("confi.schema.json"))
                 options.Schema = JsonSchema.FromFile("confi.schema.json")
         });
-}
-```
 
-```csharp
-public static void AddConfiServices(this IApplicationBuilder builder, ConfiConnectionString connectionString)
-{
-    builder.AddJsonHttp("");
+    var source = builder.Configuration.AddJsonHttp(parsedUrl.ToConfigurationSourceUrl());
+
+    builder.Services.AddHostedService<ConfiSelfDeclarationBackgroundService>(); // possibly other dependent services
+    builder.Services.AddPolledConfigurationLoggingBackgroundService(source);
 }
 ```
 
