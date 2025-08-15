@@ -1,35 +1,33 @@
-- [ ] Consumer Declares AppId, Schema and Value
+- [ ] Self-Declaring Consumer. [Details](#self-declaring-consumer)
 - [ ] UI Configuration Value Editing with Schema Validation
-- [ ] Consumer reads configuration by the app id
 
-## Target
-
-```csharp
-var confiPolling = builder.Configuration.AddConfi("http://localhost:40398/my-app");
-    // registers Confi:AppId and Confi:Url
-    // may call AddJsonHttp("http://localhost:40398/apps/my-app");
-
-// ...
-
-confiPolling.RegisterLogging(app.Services);
-
-app.SelfDeclareInConfi(); 
-    // the method may accept arguments indicating from where to get the schema
-    // e.g. file name or a type (for automatic schema resolution)
-```
-
-Or
+## Self-Declaring Consumer
 
 ```csharp
-builder.AddConfi("http://localhost:40398/my-app");
-    // Accepts arguments from both builder.Configuration.AddConfi and app.SelfDeclare
-    // 
-    // registers Confi:AppId and Confi:Url
-    // 
-    // registers IHostedService, that:
-    // 1. Self-Declares
-    // 2. Polls configuration periodically and on start
-    // 3. Registers logging for poll events
-    // 
-    // For self declaration we both accept 
+public static OptionsBuilder<ConfiSelfDeclarationSettings> AddConfi(this IApplicationBuilder builder, string connectionString)
+{
+    var connectionSettings, configSource = builder.Configuration.AddConfi(connectionString);
+
+    // Registers IHostedService that logs by listening to events
+    // Part of Confi.Json package. Or even some lower level package, used within Confi.Json
+    builder.Services.AddConfigurationPollerLoggingBackgroundService(poller);
+
+    // 1. Preconfigures ConfiSelfDeclarationSettings options (and returns builder for possible customizations)
+    // 2. Registers Background Service, listeing to polling events and performing self-declaration based on the settings from the step 1
+    return builder.Services.AddConfiSelfDeclarator(connectionSettings, poller);
+}
+
+public static (ConnectionSettings, JsonHttpConfiguration.Source) AddConfi(this ConfigurationManager configuration, string connectionString)
+{
+    connectionString ?= builder.Configuration["ConnectionStrings:Confi"] ?? builder.Configuration["Confi:ConnectionString"]
+        ?? throw new ("""
+            Confi Connection String is required. 
+            but was neither passed directly nor available from 
+            ConnectionStrings:Confi or Confi:ConnectionString configuration values
+            """);
+
+    var connectionSettings = ConnectionSettings.Parse(connectionString);
+
+    var poller = builder.Configuration.AddJsonHttp($"{connectionSettings.BaseUrl}/apps/{connectionSettings.AppId}/configuration");
+}
 ```
