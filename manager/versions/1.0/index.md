@@ -1,7 +1,13 @@
 - [ ] Self-Declaring Consumer. [Details](#self-declaring-consumer)
-- [ ] UI Configuration Value Editing with Schema Validation
+- [ ] UI Configuration Value Editing with Schema Validation. [Details](#ui)
 
 ## Self-Declaring Consumer
+
+**In-Scope:**
+
+- [migrations](migrations.md)
+
+**Prototype:**
 
 ```csharp
 public static OptionsBuilder<ConfiSelfDeclarationSettings> AddConfi(this IApplicationBuilder builder, string connectionString)
@@ -31,3 +37,10 @@ public static (ConnectionSettings, JsonHttpConfiguration.Source) AddConfi(this C
     var poller = builder.Configuration.AddJsonHttp($"{connectionSettings.BaseUrl}/apps/{connectionSettings.AppId}/configuration");
 }
 ```
+
+## UI
+
+**Out-of-scope:**
+
+- Nodes Display
+- Non-latest Versions
