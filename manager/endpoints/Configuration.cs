@@ -42,7 +42,7 @@ public static class ConfigurationEndpoints
     {
         await configurationsCollection.Put(new ConfigurationRecord(
             Id: appId,
-            Value: configuration.ToBsonDocument()
+            Value: configuration.ToBsonDoc()
         ));
 
         return await AppEndpoints.GetApp(
@@ -63,7 +63,7 @@ public static class ConfigurationEndpoints
 
         var set = new ConfigurationRecord(
             Id: appId,
-            Value: configuration.ToBsonDocument()
+            Value: configuration.ToBsonDoc()
         );
 
         await mongoCollection.Put(set);

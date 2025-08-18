@@ -31,28 +31,16 @@ public static class AppVersionEndpoints
         var recordId = AppVersionRecord.BuildId(appId, version);
         var existingRecord = await appVersionCollection.Search(recordId);
 
-        if (existingRecord != null)
-        {
-            return existingRecord.ToProtocol();
-        }
+        if (existingRecord != null) return existingRecord.ToProtocol();
 
-        var effectiveConfiguration = candidate.Configuration;
-        var latestVersionConfiguration = await appVersionCollection.SearchLatestAppVersionConfiguration(appId);
-        if (latestVersionConfiguration != null)
-        {
-            var jsonSchema = candidate.Schema.Deserialize<JsonSchema>(JsonSerializerOptions.Web)!;
-            effectiveConfiguration = jsonSchema.Combine(
-                latestVersionConfiguration.ToJsonElement(),
-                candidate.Configuration
-            ).ToElement();
-        }
+        var config = await appVersionCollection.GetEffectiveConfiguration(candidate, appId);
 
         var newRecord = new AppVersionRecord(
             Id: recordId,
             AppId: appId,
             Version: version,
-            Schema: candidate.Schema.ToBsonDocument(),
-            Configuration: effectiveConfiguration.ToBsonDocument()
+            Schema: candidate.Schema.ToBsonDoc(),
+            Configuration: config.ToBsonDoc()
         );
 
         await appVersionCollection.InsertOneAsync(newRecord);
@@ -68,10 +56,7 @@ public static class AppVersionEndpoints
         var recordId = AppVersionRecord.BuildId(appId, version);
         var record = await appVersionCollection.Search(recordId);
 
-        if (record == null)
-        {
-            throw new AppVersionNotFoundException(appId, version);
-        }
+        if (record == null) throw new AppVersionNotFoundException(appId, version);
 
         return record.ToProtocol();
     }
@@ -81,15 +66,9 @@ public static class AppVersionEndpoints
         IMongoCollection<AppVersionRecord> appVersionCollection
     )
     {
-        var latestRecord = await appVersionCollection
-            .Find(x => x.AppId == appId)
-            .SortByDescending(x => x.Version)
-            .FirstOrDefaultAsync();
+        var latestRecord = await appVersionCollection.LatestAppVersion(appId).Search();
 
-        if (latestRecord == null)
-        {
-            throw new AppNotFoundException(appId);
-        }
+        if (latestRecord == null) throw new AppNotFoundException(appId);
 
         return latestRecord.ToProtocol();
     }
@@ -102,10 +81,7 @@ public static class AppVersionEndpoints
     {
         var recordId = AppVersionRecord.BuildId(appId, version);
 
-        var record = await appVersionCollection
-            .Find(x => x.Id == recordId)
-            .Project(x => x.Configuration)
-            .FirstOrDefaultAsync();
+        var record = await appVersionCollection.ById(recordId).SearchConfiguration();
 
         if (record == null) throw new AppVersionNotFoundException(appId, version);
 
@@ -117,7 +93,7 @@ public static class AppVersionEndpoints
         IMongoCollection<AppVersionRecord> appVersionCollection
     )
     {
-        var record = await appVersionCollection.SearchLatestAppVersionConfiguration(appId);
+        var record = await appVersionCollection.LatestAppVersion(appId).SearchConfiguration();
 
         if (record == default) throw new AppNotFoundException(appId);
 
@@ -133,7 +109,7 @@ public static class AppVersionEndpoints
     {
         var recordId = AppVersionRecord.BuildId(appId, version);
 
-        var update = Builders<AppVersionRecord>.Update.Set(x => x.Configuration, configuration.ToBsonDocument());
+        var update = Builders<AppVersionRecord>.Update.Set(x => x.Configuration, configuration.ToBsonDoc());
         var result = await appVersionCollection.UpdateOneAsync(x => x.Id == recordId, update);
         if (result.MatchedCount == 0)
         {
@@ -156,13 +132,33 @@ public static class AppVersionEndpoints
 
 public static class AppVersionCollectionExtensions
 {
-    public static async Task<BsonDocument?> SearchLatestAppVersionConfiguration(this IMongoCollection<AppVersionRecord> collection, string appId)
+    public static IFindFluent<AppVersionRecord, AppVersionRecord> LatestAppVersion(this IMongoCollection<AppVersionRecord> collection, string appId)
     {
-        return await collection
+        return collection
             .Find(x => x.AppId == appId)
             .SortByDescending(x => x.Version)
-            .Project(x => x.Configuration)
-            .FirstOrDefaultAsync();
+            .Limit(1);
+    }
+
+    public static async Task<BsonDocument?> SearchConfiguration(this IFindFluent<AppVersionRecord, AppVersionRecord> filtered)
+    {
+        return await filtered.Project(x => x.Configuration).Search();
+    }
+
+    public static async Task<JsonElement> GetEffectiveConfiguration(
+        this IMongoCollection<AppVersionRecord> appVersionCollection,
+        AppVersionCandidate candidate,
+        string appId
+    )
+    {
+        var latestVersionConfiguration = await appVersionCollection.LatestAppVersion(appId).SearchConfiguration();
+        if (latestVersionConfiguration == null) return candidate.Configuration;
+        
+        var jsonSchema = candidate.Schema.Deserialize<JsonSchema>(JsonSerializerOptions.Web)!;
+        return jsonSchema.Combine(
+            latestVersionConfiguration.ToJsonElement(),
+            candidate.Configuration
+        ).ToElement();
     }
 }
 
