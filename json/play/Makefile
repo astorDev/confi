@@ -9,6 +9,9 @@ kill:
 yac:
 	httpyac send $(TEST).http --all
 
+prep:
+	cd ../stub && dotnet run
+
 play:
 	bash -c -i 'make run & sleep 5 && make yac && kill -INT %1'
 

@@ -2,13 +2,12 @@ using Confi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jsonHttpEvents = builder.Configuration.AddJsonHttp("http://localhost:5150/");
+var listenables = builder.Configuration.AddJsonHttp("http://localhost:5150/");
 
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
+builder.Services.AddJsonHttpLoggingBackgroundService(listenables);
 
 var app = builder.Build();
-
-jsonHttpEvents.RegisterLogging(app.Services);
 
 var greeting = app.Configuration["Greeting"];
 var nestedMessage = app.Configuration["Nested:Message"];
