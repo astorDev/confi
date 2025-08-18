@@ -91,6 +91,25 @@ We need to handle various scenarios when configuration schema changes over time.
 }
 ```
 
+## Scenario 5
+
+1. Node 1 uploads with `nickname = Thor`
+2. Value Changed in Confi to `nickname = Tornado` (Node 1 value updates)
+3. Node 2 uploads with `nickname = Thor`. 
+    - The value is not updated since new schema version was not provided.
+4. Node 2 reads current configuration with `nickname = Tornado`
+    - `nickname = Tornado` takes precedence and configuration is done using it
+
+
+## Scenario 6
+
+1. Node 1 uploads with `nickname = Thor`
+2. Value Changed in Confi to `nickname = Tornado` (Node 1 value updates)
+3. Node 1 uploads with `nickname = Thor` (and a newer verion number)
+    - The value is not updated since new schema version was not provided.
+4. Node 2 reads current configuration with `nickname = Tornado`
+    - `nickname = Tornado` takes precedence and configuration is done using it
+
 ## Option 1: Brute-force 
 
 We always just append any new field and send a combined structure - sort of an appending optimistic merge:

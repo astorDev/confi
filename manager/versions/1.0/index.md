@@ -9,33 +9,20 @@
 
 **Prototype:**
 
-```csharp
-public static OptionsBuilder<ConfiSelfDeclarationSettings> AddConfi(this IApplicationBuilder builder, string connectionString)
-{
-    var connectionSettings, configSource = builder.Configuration.AddConfi(connectionString);
+```ruby
+addConfi
+    client = confiClientFrom @connectionSettings
 
-    // Registers IHostedService that logs by listening to events
-    // Part of Confi.Json package. Or even some lower level package, used within Confi.Json
-    builder.Services.AddConfigurationPollerLoggingBackgroundService(poller);
+    client.putAppVersion
+        @version # if app version already exists - returns it
+        @schema # if app not exists, creates it and sets schema as passed
+        value = @iconfiguration.asJsonFrom @schema
+        mergePreference = 'preferPrevious' # Overrides passed value by old values by default (alt: `preferPassed`)
 
-    // 1. Preconfigures ConfiSelfDeclarationSettings options (and returns builder for possible customizations)
-    // 2. Registers Background Service, listeing to polling events and performing self-declaration based on the settings from the step 1
-    return builder.Services.AddConfiSelfDeclarator(connectionSettings, poller);
-}
+    listenables = @iconfiguration.addJsonHttp 
+        @connectionSettings.toConfigurationUrl @version
 
-public static (ConnectionSettings, JsonHttpConfiguration.Source) AddConfi(this ConfigurationManager configuration, string connectionString)
-{
-    connectionString ?= builder.Configuration["ConnectionStrings:Confi"] ?? builder.Configuration["Confi:ConnectionString"]
-        ?? throw new ("""
-            Confi Connection String is required. 
-            but was neither passed directly nor available from 
-            ConnectionStrings:Confi or Confi:ConnectionString configuration values
-            """);
-
-    var connectionSettings = ConnectionSettings.Parse(connectionString);
-
-    var poller = builder.Configuration.AddJsonHttp($"{connectionSettings.BaseUrl}/apps/{connectionSettings.AppId}/configuration");
-}
+    addLoggingBackgroundService @services listenables
 ```
 
 ## UI
