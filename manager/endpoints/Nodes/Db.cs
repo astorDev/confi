@@ -43,7 +43,8 @@ public record NodeRecord(
             AppId,
             Version,
             Schema.ToJsonElement(),
-            Configuration.ToJsonElement()
+            Configuration.ToJsonElement(),
+            ExpiresAt
         );
     }
 }

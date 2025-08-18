@@ -32,6 +32,6 @@ public static class Mongo
         return list.ToDictionary(keySelector, valueSelector);
     }
 
-    public static async Task Put<T>(this IMongoCollection<T> collection, string id, UpdateDefinition<T> update) where T : IMongoRecord<string>
+    public static async Task<UpdateResult> Put<T>(this IMongoCollection<T> collection, string id, UpdateDefinition<T> update) where T : IMongoRecord<string>
         => await collection.UpdateOneAsync(x => x.Id == id, update, new UpdateOptions { IsUpsert = true });
 }

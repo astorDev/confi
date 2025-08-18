@@ -11,6 +11,7 @@ public static class MainHelper
         endpoints.MapNodes();
         endpoints.MapApps();
         endpoints.MapConfiguration();
+        endpoints.MapAppVersionEndpoints();
 
         return endpoints;
     }
@@ -21,13 +22,15 @@ public static class MainHelper
             .AddNodeCollection()
             .AddCollection<SchemeRecord>("schemas")
             .AddCollection<ConfigurationRecord>("configs")
-            .AddCollection<AppRecord>("apps");
+            .AddCollection<AppRecord>("apps")
+            .AddCollection<AppVersionRecord>("appVersions");
     }
 
     public static Error? ToConfiManagerError(this Exception exception)
     {
         return NodeHelper.MapNodesErrors(exception)
             ?? AppEndpoints.MapAppErrors(exception)
+            ?? AppVersionEndpoints.MapAppVersionErrors(exception)
             ?? null;
     }
 }

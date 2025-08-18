@@ -10,6 +10,7 @@ public partial class Uris
     public static string AppVersion(string appId, string version) => $"{Apps}/{appId}/{Versions}/{version}";
     public static string LatestAppVersion(string appId) => AppVersion(appId, Latest);
     public static string AppVersionConfiguration(string appId, string version) => $"{AppVersion(appId, version)}/{Configuration}";
+    public static string AppLatestVersionConfiguration(string appId) => $"{LatestAppVersion(appId)}/{Configuration}";
 }
 
 public record AppVersionCandidate(

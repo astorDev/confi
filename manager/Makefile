@@ -3,7 +3,7 @@ TEST ?= about
 prep:
 	docker compose up -d
 
-run-api:
+run:
 	dotnet run --project host
 
 down:
