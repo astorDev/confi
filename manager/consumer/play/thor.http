@@ -1,0 +1,18 @@
+GET http://localhost:40398/apps/thor/configuration
+
+###
+PUT http://localhost:40398/apps/thor/configuration
+
+{
+    "nickname" : "Tornado"
+}
+
+###
+PUT http://localhost:40398/apps/thor/configuration
+
+{
+    "nickname" : "Toreodor"
+}
+
+###
+GET /

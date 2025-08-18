@@ -3,22 +3,31 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonHttp("http://localhost:40398/apps/thor/configuration");
+var listenables = builder.Configuration.AddJsonHttp("http://localhost:40398/apps/thor/configuration");
 
 builder.Configuration.AddFluentEnvironmentVariables();
 
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
 
+builder.Services.AddJsonHttpLoggingBackgroundService(listenables);
 builder.Services.Configure<ThorConfiguration>(builder.Configuration);
 
 var app = builder.Build();
 
-app.MapGet("/", (IOptionsSnapshot<ThorConfiguration> snapshot, IConfiguration configuration) =>
+app.MapGet("/", (
+    IOptionsSnapshot<ThorConfiguration> snapshot,
+    IOptionsMonitor<ThorConfiguration> monitor,
+    IOptions<ThorConfiguration> options,
+    IConfiguration configuration) =>
 {
     return new
     {
         FromSnapshot = snapshot.Value,
-        FromConfiguration = configuration["Nickname"]
+        FromMonitor = monitor.CurrentValue,
+        FromOptions = options.Value,
+        FromConfiguration = new {
+            Nickname = configuration["Nickname"]
+        }
     };
 });
 
