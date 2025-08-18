@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Text.Json;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Nist;
 using Persic;
@@ -14,8 +15,6 @@ public static class AppVersionEndpoints
         endpoints.MapGet(Uris.LatestAppVersion("{appId}"), GetLatestAppVersion);
         endpoints.MapGet(Uris.AppVersion("{appId}", "{version}"), GetAppVersion);
         endpoints.MapGet(Uris.AppVersionConfiguration("{appId}", "{version}"), GetAppVersionConfiguration);
-
-        // TO DO: Replace with protocol uris
         endpoints.MapGet(Uris.AppVersionConfiguration("{appId}", Uris.Latest), GetAppLatestVersionConfiguration);
         endpoints.MapPut(Uris.AppVersionConfiguration("{appId}", "{version}"), PutAppVersionConfiguration);
 
@@ -34,19 +33,26 @@ public static class AppVersionEndpoints
 
         if (existingRecord != null)
         {
-            // Optional TO DO: check if the schema and configuration match the existing record
-
             return existingRecord.ToProtocol();
         }
 
-        // TO DO: extract previous version if exists and merge it's configuration on top of the passed one
+        var effectiveConfiguration = candidate.Configuration;
+        var latestVersionConfiguration = await appVersionCollection.SearchLatestAppVersionConfiguration(appId);
+        if (latestVersionConfiguration != null)
+        {
+            var jsonSchema = candidate.Schema.Deserialize<JsonSchema>(JsonSerializerOptions.Web)!;
+            effectiveConfiguration = jsonSchema.Combine(
+                latestVersionConfiguration.ToJsonElement(),
+                candidate.Configuration
+            ).ToElement();
+        }
 
         var newRecord = new AppVersionRecord(
             Id: recordId,
             AppId: appId,
             Version: version,
             Schema: candidate.Schema.ToBsonDocument(),
-            Configuration: candidate.Configuration.ToBsonDocument()
+            Configuration: effectiveConfiguration.ToBsonDocument()
         );
 
         await appVersionCollection.InsertOneAsync(newRecord);
@@ -87,7 +93,7 @@ public static class AppVersionEndpoints
 
         return latestRecord.ToProtocol();
     }
-    
+
     public static async Task<JsonElement> GetAppVersionConfiguration(
         string appId,
         string version,
@@ -95,7 +101,7 @@ public static class AppVersionEndpoints
     )
     {
         var recordId = AppVersionRecord.BuildId(appId, version);
-        
+
         var record = await appVersionCollection
             .Find(x => x.Id == recordId)
             .Project(x => x.Configuration)
@@ -111,13 +117,9 @@ public static class AppVersionEndpoints
         IMongoCollection<AppVersionRecord> appVersionCollection
     )
     {
-        var record = await appVersionCollection
-            .Find(x => x.AppId == appId)
-            .SortByDescending(x => x.Version)
-            .Project(x => x.Configuration)
-            .FirstOrDefaultAsync();
+        var record = await appVersionCollection.SearchLatestAppVersionConfiguration(appId);
 
-        if (record == null) throw new AppNotFoundException(appId);
+        if (record == default) throw new AppNotFoundException(appId);
 
         return record.ToJsonElement();
     }
@@ -149,6 +151,18 @@ public static class AppVersionEndpoints
             AppVersionNotFoundException e => new(System.Net.HttpStatusCode.BadRequest, "AppVersionNotFound"),
             _ => null
         };
+    }
+}
+
+public static class AppVersionCollectionExtensions
+{
+    public static async Task<BsonDocument?> SearchLatestAppVersionConfiguration(this IMongoCollection<AppVersionRecord> collection, string appId)
+    {
+        return await collection
+            .Find(x => x.AppId == appId)
+            .SortByDescending(x => x.Version)
+            .Project(x => x.Configuration)
+            .FirstOrDefaultAsync();
     }
 }
 

@@ -23,6 +23,9 @@ build:
 yac:
 	httpyac send tests/$(TEST).http --all --env local
 
+test:
+	make -C tests test
+
 replay:
 	make reset
 	make play

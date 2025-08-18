@@ -24,7 +24,7 @@ GET /apps/thor/versions/1.0.0/configuration
 PUT /apps/thor/versions/1.0.0/configuration
 
 {
-    "nickname": "Thornado"
+    "nickname": "Tornado"
 }
 
 ###
