@@ -61,6 +61,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Json.Playground", "js
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Json.Stub", "json\stub\Confi.Json.Stub.csproj", "{D41E2E9B-B186-4181-8702-D39C784551B2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "versioning", "versioning", "{CA8C8471-89D3-4E18-B1C1-4DAE5954B40E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confi.Manager.Versioning.Playground", "manager\versioning\play\Confi.Manager.Versioning.Playground.csproj", "{4C5C4101-4CA0-4F67-854B-CBD322C314C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +147,10 @@ Global
 		{D41E2E9B-B186-4181-8702-D39C784551B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D41E2E9B-B186-4181-8702-D39C784551B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D41E2E9B-B186-4181-8702-D39C784551B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C5C4101-4CA0-4F67-854B-CBD322C314C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C5C4101-4CA0-4F67-854B-CBD322C314C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C5C4101-4CA0-4F67-854B-CBD322C314C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C5C4101-4CA0-4F67-854B-CBD322C314C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,5 +179,7 @@ Global
 		{FC17AA69-80A7-4B39-AD52-F51DE50182EA} = {2AE2E18B-B939-4531-9DE2-E8F34DB5AEA3}
 		{A44B9D52-C994-407B-B144-411597270024} = {2AE2E18B-B939-4531-9DE2-E8F34DB5AEA3}
 		{D41E2E9B-B186-4181-8702-D39C784551B2} = {2AE2E18B-B939-4531-9DE2-E8F34DB5AEA3}
+		{CA8C8471-89D3-4E18-B1C1-4DAE5954B40E} = {B4B5F4F1-8A74-4999-8463-7B7B37C746C8}
+		{4C5C4101-4CA0-4F67-854B-CBD322C314C5} = {CA8C8471-89D3-4E18-B1C1-4DAE5954B40E}
 	EndGlobalSection
 EndGlobal

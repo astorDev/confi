@@ -1,21 +1,46 @@
-- [ ] Create Full Confi (Manager) Cycle
-    - [ ] On Start Consumer Sends Node Info
-    - [ ] Consumer Syncs with Confi Host. [Details](#consumer-sync)
-    - [ ] Host Displays an Actual Info.
+- [ ] Self-Declaring Consumer. [Details](#self-declaring-consumer)
+- [ ] UI Configuration Value Editing with Schema Validation. [Details](#ui)
 
-## Consumer Sync
+## Self-Declaring Consumer
 
-- [ ] Consumer Reads Current Configuration.
-- [ ] Consumer Self-Declared with an Up-To-Date Configuration
+**In-Scope:**
 
-#### Is Consumer Sync a Sequential or Parallel Operation?
+- [migrations](migrations.md)
 
-- Does consumer sync is one operation or smth done in parallel
-    - Benefits for parallel
-        - If node push breaks consumer will still get an up to date info
-        - Can use simply `AddJsonHttp`
-        - Sync intervals can be configured separately
-            - In sequential case we can make `PUT /nodes` run once in x (2/3) configuration reads
-    - Benefits for sequential
-        - Normally no outdated state push
-        - ⭐ Allows `Syncing` status (`node.updatedAt` is before (<) `configuration.updatedAt`) - no `unsynced` status in normal flow
+**Prototype:**
+
+```csharp
+public static OptionsBuilder<ConfiSelfDeclarationSettings> AddConfi(this IApplicationBuilder builder, string connectionString)
+{
+    var connectionSettings, configSource = builder.Configuration.AddConfi(connectionString);
+
+    // Registers IHostedService that logs by listening to events
+    // Part of Confi.Json package. Or even some lower level package, used within Confi.Json
+    builder.Services.AddConfigurationPollerLoggingBackgroundService(poller);
+
+    // 1. Preconfigures ConfiSelfDeclarationSettings options (and returns builder for possible customizations)
+    // 2. Registers Background Service, listeing to polling events and performing self-declaration based on the settings from the step 1
+    return builder.Services.AddConfiSelfDeclarator(connectionSettings, poller);
+}
+
+public static (ConnectionSettings, JsonHttpConfiguration.Source) AddConfi(this ConfigurationManager configuration, string connectionString)
+{
+    connectionString ?= builder.Configuration["ConnectionStrings:Confi"] ?? builder.Configuration["Confi:ConnectionString"]
+        ?? throw new ("""
+            Confi Connection String is required. 
+            but was neither passed directly nor available from 
+            ConnectionStrings:Confi or Confi:ConnectionString configuration values
+            """);
+
+    var connectionSettings = ConnectionSettings.Parse(connectionString);
+
+    var poller = builder.Configuration.AddJsonHttp($"{connectionSettings.BaseUrl}/apps/{connectionSettings.AppId}/configuration");
+}
+```
+
+## UI
+
+**Out-of-scope:**
+
+- Nodes Display
+- Non-latest Versions
