@@ -10,7 +10,7 @@ public static class Mongo
     public static JsonElement ToJsonElement(this BsonDocument bson) =>
         JsonDocument.Parse(bson.ToJson()).RootElement;
 
-    public static BsonDocument ToBsonDocument(this JsonElement json) =>
+    public static BsonDocument ToBsonDoc(this JsonElement json) =>
         BsonDocument.Parse(json.GetRawText());
 
     public static bool Equivalent(this BsonDocument bson, BsonDocument other) =>
@@ -32,6 +32,12 @@ public static class Mongo
         return list.ToDictionary(keySelector, valueSelector);
     }
 
-    public static async Task Put<T>(this IMongoCollection<T> collection, string id, UpdateDefinition<T> update) where T : IMongoRecord<string>
+    public static async Task<UpdateResult> Put<T>(this IMongoCollection<T> collection, string id, UpdateDefinition<T> update) where T : IMongoRecord<string>
         => await collection.UpdateOneAsync(x => x.Id == id, update, new UpdateOptions { IsUpsert = true });
+
+    public static Task<TProjection> Search<TDocument, TProjection>(this IFindFluent<TDocument, TProjection> query)
+        => query.FirstOrDefaultAsync();
+
+    public static IFindFluent<T, T> ById<T>(this IMongoCollection<T> collection, string id) where T : IMongoRecord<string>
+        => collection.Find(x => x.Id == id);
 }

@@ -91,6 +91,7 @@ public class AppAssembler
     {
         return new App(
             schemeRecord.Id,
+            "",
             nodeRecords.ToDictionary(
                 x => x.Id,
                 x => new NodeState(

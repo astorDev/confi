@@ -30,8 +30,8 @@ public record NodeRecord(
             appId,
             candidate.Version,
             UpdatedAt: DateTime.UtcNow,
-            candidate.Schema.ToBsonDocument(),
-            candidate.Configuration.ToBsonDocument(),
+            candidate.Schema.ToBsonDoc(),
+            candidate.Configuration.ToBsonDoc(),
             ExpiresAt: DateTime.UtcNow.Add(TimeSpan.FromSeconds(10) /* TO DO: replace with time to live after nuget update*/ )
         );
     }
@@ -43,7 +43,8 @@ public record NodeRecord(
             AppId,
             Version,
             Schema.ToJsonElement(),
-            Configuration.ToJsonElement()
+            Configuration.ToJsonElement(),
+            ExpiresAt
         );
     }
 }

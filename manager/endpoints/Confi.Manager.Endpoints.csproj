@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confi.Manager.Protocol" Version="2025.106.103.9" />
+    <PackageReference Include="Confi.Manager.Protocol" Version="2025.108.118.13-manger-app-versions-support" />
     <PackageReference Include="Persic.Mongo" Version="2025.107.107.12" />
   </ItemGroup>
 

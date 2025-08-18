@@ -3,7 +3,7 @@ TEST ?= about
 prep:
 	docker compose up -d
 
-run-api:
+run:
 	dotnet run --project host
 
 down:
@@ -22,6 +22,9 @@ build:
 
 yac:
 	httpyac send tests/$(TEST).http --all --env local
+
+test:
+	make -C tests test
 
 replay:
 	make reset

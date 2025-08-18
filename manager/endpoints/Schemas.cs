@@ -35,7 +35,7 @@ public static class SchemaHelper
         var newSchema = new SchemeRecord(
             Id: appId,
             Version: candidateVersion,
-            Schema: candidateSchema.ToBsonDocument()
+            Schema: candidateSchema.ToBsonDoc()
         );
 
         await schemaCollection.Put(newSchema);
