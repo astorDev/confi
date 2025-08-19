@@ -3,7 +3,6 @@ using System.Text.Json;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Nist;
-using Persic;
 
 namespace Confi.Manager;
 
@@ -11,6 +10,7 @@ public static class AppVersionEndpoints
 {
     public static IEndpointRouteBuilder MapAppVersionEndpoints(this IEndpointRouteBuilder endpoints)
     {
+        endpoints.MapPut(Uris.AppVersion("{appId}", "unversioned"), PutUnversionedAppVersion);
         endpoints.MapPut(Uris.AppVersion("{appId}", "{version}"), PutAppVersion);
         endpoints.MapGet(Uris.LatestAppVersion("{appId}"), GetLatestAppVersion);
         endpoints.MapGet(Uris.AppVersion("{appId}", "{version}"), GetAppVersion);
@@ -19,6 +19,32 @@ public static class AppVersionEndpoints
         endpoints.MapPut(Uris.AppVersionConfiguration("{appId}", "{version}"), PutAppVersionConfiguration);
 
         return endpoints;
+    }
+
+    public static async Task<AppVersion> PutUnversionedAppVersion(
+        string appId,
+        AppVersionCandidate candidate,
+        IMongoCollection<AppVersionRecord> appVersionCollection
+    )
+    {
+        var recordId = AppVersionRecord.BuildId(appId, "unversioned");
+        var existingRecord = await appVersionCollection.Search(recordId);
+
+        var effectiveConfiguration = existingRecord == null ?
+            candidate.Configuration :
+            candidate.Schema.Combine(existingRecord.Configuration, candidate.Configuration);
+
+        var effectiveRecord = new AppVersionRecord(
+            Id: recordId,
+            AppId: appId,
+            Version: "unversioned",
+            Schema: candidate.Schema,
+            Configuration: effectiveConfiguration.ToBsonDoc()
+        );
+
+        await Persic.MongoOperationsExtensions.Put(appVersionCollection, effectiveRecord);
+
+        return effectiveRecord.ToProtocol();
     }
 
     public static async Task<AppVersion> PutAppVersion(
@@ -31,16 +57,28 @@ public static class AppVersionEndpoints
         var recordId = AppVersionRecord.BuildId(appId, version);
         var existingRecord = await appVersionCollection.Search(recordId);
 
-        if (existingRecord != null) return existingRecord.ToProtocol();
+        if (existingRecord != null)
+        {
+            if (!candidate.Schema.DeepEquals(existingRecord.Schema))
+                throw new AppVersionConflictException(appId, version);
+            
+            return existingRecord.ToProtocol();
+        }
 
-        var config = await appVersionCollection.GetEffectiveConfiguration(candidate, appId);
+        var latestVersionConfiguration = await appVersionCollection.LatestAppVersion(appId).SearchConfiguration();
+        var effectiveConfiguration = latestVersionConfiguration == null ?
+            candidate.Configuration
+            : candidate.Schema.Combine(
+                latestVersionConfiguration,
+                candidate.Configuration
+            );
 
         var newRecord = new AppVersionRecord(
             Id: recordId,
             AppId: appId,
             Version: version,
-            Schema: candidate.Schema.ToBsonDoc(),
-            Configuration: config.ToBsonDoc()
+            Schema: candidate.Schema,
+            Configuration: effectiveConfiguration.ToBsonDoc()
         );
 
         await appVersionCollection.InsertOneAsync(newRecord);
@@ -124,7 +162,8 @@ public static class AppVersionEndpoints
         return exception switch
         {
             // TO DO: declare error in protocol
-            AppVersionNotFoundException e => new(System.Net.HttpStatusCode.BadRequest, "AppVersionNotFound"),
+            AppVersionNotFoundException _ => new(System.Net.HttpStatusCode.BadRequest, "AppVersionNotFound"),
+            AppVersionConflictException _ => new(System.Net.HttpStatusCode.BadRequest, "AppVersionConflict"),
             _ => null
         };
     }
@@ -153,16 +192,39 @@ public static class AppVersionCollectionExtensions
     {
         var latestVersionConfiguration = await appVersionCollection.LatestAppVersion(appId).SearchConfiguration();
         if (latestVersionConfiguration == null) return candidate.Configuration;
-        
-        var jsonSchema = candidate.Schema.Deserialize<JsonSchema>(JsonSerializerOptions.Web)!;
-        return jsonSchema.Combine(
-            latestVersionConfiguration.ToJsonElement(),
+
+        return candidate.Schema.Combine(
+            latestVersionConfiguration,
             candidate.Configuration
+        );
+    }
+}
+
+public static class JsonSchemaExtensions
+{
+    public static JsonElement Combine(
+        this JsonSchema schema,
+        BsonDocument latestConfiguration,
+        JsonElement candidateConfiguration
+    )
+    {
+        return schema.Combine(
+            latestConfiguration.ToJsonElement(),
+            candidateConfiguration
         ).ToElement();
     }
 }
 
 public class AppVersionNotFoundException(string appId, string version) : Exception($"App version '{version}' for app '{appId}' not found.")
+{
+    public override IDictionary Data => new Dictionary<string, string>()
+    {
+        { "appId", appId },
+        { "version", version }
+    };
+}
+
+public class AppVersionConflictException(string appId, string version) : Exception($"App version '{version}' for app '{appId}' has a schema conflict.")
 {
     public override IDictionary Data => new Dictionary<string, string>()
     {

@@ -18,14 +18,14 @@ public partial class Uris
 }
 
 public record AppVersionCandidate(
-    JsonElement Schema,
+    JsonSchema Schema,
     JsonElement Configuration
 );
 
 public record AppVersion(
     string AppId,
     string Version,
-    JsonElement Schema,
+    JsonSchema Schema,
     JsonElement Configuration
 );
 
@@ -46,3 +46,9 @@ public partial class Client
     public async Task<JsonElement> PutAppVersionConfiguration(string appId)
         => await Put<JsonElement>(Uris.AppVersionConfiguration(appId, Uris.Latest), new JsonElement());
 }
+
+public record JsonSchema(
+    string Type,
+    Dictionary<string, JsonSchema> Properties,
+    string[] Required
+);

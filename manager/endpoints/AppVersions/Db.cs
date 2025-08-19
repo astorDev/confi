@@ -7,7 +7,7 @@ public record AppVersionRecord(
     string Id,
     string AppId,
     string Version,
-    BsonDocument Schema,
+    JsonSchema Schema,
     BsonDocument Configuration
 ) : IMongoRecord<string>
 {
@@ -18,7 +18,7 @@ public record AppVersionRecord(
         return new AppVersion(
             AppId: AppId,
             Version: Version,
-            Schema: Schema.ToJsonElement(),
+            Schema: Schema,
             Configuration: Configuration.ToJsonElement()
         );
     }

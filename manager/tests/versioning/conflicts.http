@@ -1,0 +1,41 @@
+PUT /apps/thor/versions/1.0.0
+
+{
+    "schema": {
+        "type": "object",
+        "properties": {
+            "nickname": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "nickname"
+        ]
+    },
+    "configuration": {
+        "nickname": "Thor"
+    }
+}
+
+###
+PUT /apps/thor/versions/1.0.0
+
+{
+    "schema": {
+        "type": "object",
+        "properties": {
+            "nickname": {
+                "type": "string"
+            },
+            "age" : {
+                "type": "decimal"
+            }
+        },
+        "required": [
+            "nickname"
+        ]
+    },
+    "configuration": {
+        "nickname": "Thor"
+    }
+}

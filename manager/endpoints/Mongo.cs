@@ -32,8 +32,8 @@ public static class Mongo
         return list.ToDictionary(keySelector, valueSelector);
     }
 
-    public static async Task<UpdateResult> Put<T>(this IMongoCollection<T> collection, string id, UpdateDefinition<T> update) where T : IMongoRecord<string>
-        => await collection.UpdateOneAsync(x => x.Id == id, update, new UpdateOptions { IsUpsert = true });
+    // public static async Task<UpdateResult> Put<T>(this IMongoCollection<T> collection, string id, UpdateDefinition<T> update) where T : IMongoRecord<string>
+    //     => await collection.UpdateOneAsync(x => x.Id == id, update, new UpdateOptions { IsUpsert = true });
 
     public static Task<TProjection> Search<TDocument, TProjection>(this IFindFluent<TDocument, TProjection> query)
         => query.FirstOrDefaultAsync();
