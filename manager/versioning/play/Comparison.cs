@@ -39,6 +39,15 @@ public class Comparison
         IsGreater(plusTen, plusNine).ShouldBeTrue();
     }
 
+    [TestMethod]
+    public void SemverGreaterThenAuto()
+    {
+        var calverAuto = "-2025.103.0";
+        var semver = "0.0.1";
+
+        IsGreater(semver, calverAuto).ShouldBeTrue();
+    }
+
     public bool IsGreater(string expectedGreater, string expectedLess)
     {
         return StringComparer.Ordinal.Compare(expectedGreater, expectedLess) > 0;

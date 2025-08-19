@@ -16,8 +16,7 @@ addConfi
     putApp = client.putAppVersion
         @schema # if app not exists, creates it and sets schema as passed
         value = @iconfiguration.asJsonFrom @schema
-        mergePreference = 'preferPrevious' # Overrides passed value by old values by default (alt: `preferPassed`)
-        # @version # only if used, otherwise automatically assigned by manager
+        @version ?? 'unspecified' # current overrides everything, other versions do the versioning stuff
 
     listenables = @iconfiguration.addJsonHttp 
         @connectionSettings.toConfigurationUrl putApp.version

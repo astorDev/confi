@@ -1,91 +1,35 @@
+---
+status: being_implemented
+---
+
 # Versioning
 
-Confi requires schema versioning for smooth migration. For example, if a field is removed in a newer version an app using an old version should still be able to get the field value. To achieve that, an app will pull only configuration, belonging to it's version. That implies that an app knows it's own schema version. 
+The best way to handle breaking changes is to not make the breaking changes. In case of configuration, this roughly means to not delete outdated configuration fields. Moreover, for a simple deployment, where all the app instances updated to the newer version this should not be very annoying, since you'll need to keep those outdated fields **only** from the previously version. Once all of the deployed instances are using the latest version you should be able to safely remove the old field. 
 
-There are multiple possible options for schema version number to consider:
+The approach above should fit the majority of apps. However, if you want a more robust approach, we provide a way to handle this.
 
-- Version In Schema File.
-- Version Assigned by Manager.
+## Using Versions
 
-If you want to understand why - consult the [dismissed]() document.
+When it makes sense:
 
-## Version In Schema File
+1. You maintain multiple working app versions.
+1. You don't want to care about breaking changes, even in the closest app versions.
+1. You want to see old configuration schema and value versions for analytics purposes. (Without relying on Git)
 
-**Drawbacks:**
+For a stable work version should be under consumer's control. If you want to understand why - consult the [dismissed](dismissed.md) document. So to enable versioning, you **must** supply `version` when self-declaring your application. 
 
-- It is likely that developer will forget to update the version
-    - It will raise an error from confi manager, but this will be annoyting
 
-## Version Assigned by Manager
+1. Value passed directly
+1. Configuration value `Confi:Version`
+1. Configuration value `Version`
 
-Manager provides an endpoint for declaration. If the accepted schema does not match **latest** (current) schema - a new schema version record is created.
+> "Configuration value" means a configuration variable received from a source preceding Confi e.g. environment variable. Those particular variables should be embodied in something like a docker image, but we do not enforce it in any way.
 
-> Note: If a manager's schema matches an old schema it still considered new. This handles scenario where field semantic has changed, therefore a property was deleted and then reinstantiated with a new value.
+## Version Conflicts
 
-**Benefits:**
+If the same `version` is used for different schemas, this is considered a mistakes because:
 
-- Fully automatic
+a. It violates the whole purpose of using Versions
+b. We can imagine a circumstances, where something went wrong with version assignment and an old version was used. This may quietly break either old or new version, so an explicit error should be used instead. 
 
-**Drawbacks:**
-
-- Additional complexity in manager
-- Requires opinionated versioning
-- Doesn't allow a version upgrades without schema changes 
-    - Those version upgrades may be useful for observability
-
-## Using App Version
-
-We use app version, which is updated more frequently then the schema. But the schema 
-
-**Benefits:**
-
-- Flexibility, with possibility for enhanced transparency
-- Automatic versioning
-
-**Drawbacks:**
-
-- Requires Version Management from Consumer.
-- Unnecessary load on manager.
-
-## Hybrid: Manager & App Version
-
-If app version was provided in one of the ways:
-
-- `Version` configuration variable (`VERSION` environment variable)
-- `Confi:Version` configuration variable
-- Supplied directly to configuration method
-
-Then consumer uses the version explicitly
-
-**Drawbacks:**
-
-- May require branching in consumer logic.
-- Risk of invalid sorting (the newer will become not greater)
-    - Possible work-around: 
-        - Use `creationTime` instead of version number for sorting.
-            - This way we can not "insert" a previous version
-                - Which is hardly a good idea anyway.
-        - Prohibit self-assinged versioning if provided explicitly before
-            - Drawbacks: This will lock consumer
-        - Use `+0001` schema, which will be outbidden by virtually any self-assigned version.
-
-```http
-PUT /apps/thor/versions/latest
-
-{
-    "schema": {
-        "type": "object",
-        "properties": {
-            "nickname": {
-                "type": "string"
-            }
-        },
-        "required": [
-            "nickname"
-        ]
-    },
-    "configuration": {
-        "nickname": "Thor"
-    }
-}
-```
+> 💡 `unspecified` Version works differently, though. It will go ahead and accept the updates, since. By the way, we hope you DO NOT have an idea to use `unspecified` as your version number. This particular value is reserved for the unversioned flow.
