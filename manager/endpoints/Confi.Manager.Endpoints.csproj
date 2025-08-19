@@ -10,8 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confi.Manager.Protocol" Version="2025.108.118.13-manger-app-versions-support" />
     <PackageReference Include="Persic.Mongo" Version="2025.107.107.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\protocol\Confi.Manager.Protocol.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,8 +7,9 @@ public record AppVersionRecord(
     string Id,
     string AppId,
     string Version,
-    BsonDocument Schema,
-    BsonDocument Configuration
+    JsonSchema Schema,
+    BsonDocument Configuration,
+    DateTime CreationTime
 ) : IMongoRecord<string>
 {
     public static string BuildId(string appId, string version) => $"{appId}/{version}";
@@ -18,8 +19,9 @@ public record AppVersionRecord(
         return new AppVersion(
             AppId: AppId,
             Version: Version,
-            Schema: Schema.ToJsonElement(),
-            Configuration: Configuration.ToJsonElement()
+            Schema: Schema,
+            Configuration: Configuration.ToJsonElement(),
+            CreationTime: CreationTime
         );
     }
 }

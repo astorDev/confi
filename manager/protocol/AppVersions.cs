@@ -11,18 +11,23 @@ public partial class Uris
     public static string LatestAppVersion(string appId) => AppVersion(appId, Latest);
     public static string AppVersionConfiguration(string appId, string version) => $"{AppVersion(appId, version)}/{Configuration}";
     public static string AppLatestVersionConfiguration(string appId) => $"{LatestAppVersion(appId)}/{Configuration}";
+
+    public const string Unversioned = "unversioned";
+    public static string AppUnversionedVersion(string appId) => $"{Apps}/{appId}/{Versions}/{Unversioned}";
+    public static string AppUnversionedVersionConfiguration(string appId) => $"{AppUnversionedVersion(appId)}/{Configuration}";
 }
 
 public record AppVersionCandidate(
-    JsonElement Schema,
+    JsonSchema Schema,
     JsonElement Configuration
 );
 
 public record AppVersion(
     string AppId,
     string Version,
-    JsonElement Schema,
-    JsonElement Configuration
+    JsonSchema Schema,
+    JsonElement Configuration,
+    DateTime CreationTime
 );
 
 public partial class Client
@@ -41,4 +46,20 @@ public partial class Client
 
     public async Task<JsonElement> PutAppVersionConfiguration(string appId)
         => await Put<JsonElement>(Uris.AppVersionConfiguration(appId, Uris.Latest), new JsonElement());
+}
+
+public record JsonSchema(
+    string Type,
+    string[]? Required,
+    Dictionary<string, JsonSchema>? Properties
+)
+{
+    public JsonSchema CopyWithEmptyCollections()
+    {
+        return new JsonSchema(
+            Type,
+            Required ?? [],
+            Properties?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.CopyWithEmptyCollections()) ?? []
+        );
+    }
 }
