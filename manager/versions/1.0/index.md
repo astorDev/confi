@@ -13,14 +13,14 @@
 addConfi
     client = confiClientFrom @connectionSettings
 
-    client.putAppVersion
-        @version # if app version already exists - returns it
+    putApp = client.putAppVersion
         @schema # if app not exists, creates it and sets schema as passed
         value = @iconfiguration.asJsonFrom @schema
         mergePreference = 'preferPrevious' # Overrides passed value by old values by default (alt: `preferPassed`)
+        # @version # only if used, otherwise automatically assigned by manager
 
     listenables = @iconfiguration.addJsonHttp 
-        @connectionSettings.toConfigurationUrl @version
+        @connectionSettings.toConfigurationUrl putApp.version
 
     addLoggingBackgroundService @services listenables
 ```
