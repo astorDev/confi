@@ -7,15 +7,26 @@ public static class JsonExtensions
 {
     public static bool DeepEquals(this JsonSchema schema, JsonSchema other)
     {
-        if (schema.Type != other.Type || !schema.Required.SequenceEqual(other.Required))
+        var schemaSafe = schema.CopyWithEmptyCollections();
+        var otherSafe = other.CopyWithEmptyCollections();
+
+        return DeepEqualsUnsafe(schemaSafe, otherSafe);
+    }
+
+    private static bool DeepEqualsUnsafe(this JsonSchema schema, JsonSchema other)
+    {
+        if (schema.Type != other.Type)
             return false;
 
-        if (!schema.Properties.Keys.SequenceEqual(other.Properties.Keys))
+        if (!schema.Required!.SequenceEqual(other.Required!))
             return false;
 
-        foreach (var property in schema.Properties)
+        if (!schema.Properties!.Keys.SequenceEqual(other.Properties!.Keys))
+              return false;
+
+        foreach (var property in schema.Properties!)
         {
-            if (!other.Properties.TryGetValue(property.Key, out var otherProperty) ||
+            if (!other.Properties!.TryGetValue(property.Key, out var otherProperty) ||
                 !property.Value.DeepEquals(otherProperty))
             {
                 return false;
@@ -31,7 +42,7 @@ public static class JsonExtensions
     {
         var builder = new JsonObject();
 
-        foreach (var property in schema.Properties)
+        foreach (var property in schema.Properties ?? [])
         {
             builder[property.Key] = property.GetNode(elements);
         }

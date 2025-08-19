@@ -39,7 +39,8 @@ public static class AppVersionEndpoints
             AppId: appId,
             Version: "unversioned",
             Schema: candidate.Schema,
-            Configuration: effectiveConfiguration.ToBsonDoc()
+            Configuration: effectiveConfiguration.ToBsonDoc(),
+            CreationTime: existingRecord?.CreationTime ?? DateTime.UtcNow
         );
 
         await Persic.MongoOperationsExtensions.Put(appVersionCollection, effectiveRecord);
@@ -61,7 +62,7 @@ public static class AppVersionEndpoints
         {
             if (!candidate.Schema.DeepEquals(existingRecord.Schema))
                 throw new AppVersionConflictException(appId, version);
-            
+
             return existingRecord.ToProtocol();
         }
 
@@ -78,7 +79,8 @@ public static class AppVersionEndpoints
             AppId: appId,
             Version: version,
             Schema: candidate.Schema,
-            Configuration: effectiveConfiguration.ToBsonDoc()
+            Configuration: effectiveConfiguration.ToBsonDoc(),
+            CreationTime: DateTime.UtcNow
         );
 
         await appVersionCollection.InsertOneAsync(newRecord);
@@ -175,7 +177,7 @@ public static class AppVersionCollectionExtensions
     {
         return collection
             .Find(x => x.AppId == appId)
-            .SortByDescending(x => x.Version)
+            .SortByDescending(x => x.CreationTime)
             .Limit(1);
     }
 

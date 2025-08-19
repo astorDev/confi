@@ -26,7 +26,8 @@ public record AppVersion(
     string AppId,
     string Version,
     JsonSchema Schema,
-    JsonElement Configuration
+    JsonElement Configuration,
+    DateTime CreationTime
 );
 
 public partial class Client
@@ -49,6 +50,16 @@ public partial class Client
 
 public record JsonSchema(
     string Type,
-    Dictionary<string, JsonSchema> Properties,
-    string[] Required
-);
+    string[]? Required,
+    Dictionary<string, JsonSchema>? Properties
+)
+{
+    public JsonSchema CopyWithEmptyCollections()
+    {
+        return new JsonSchema(
+            Type,
+            Required ?? [],
+            Properties?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.CopyWithEmptyCollections()) ?? []
+        );
+    }
+}

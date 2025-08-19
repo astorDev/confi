@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Nist;
 
 namespace Confi.Manager;
@@ -27,7 +26,7 @@ public class NodeStatus {
 }
 
 public partial class Uris {
-    public static string Nodes = "nodes";
+    public const string Nodes = "nodes";
     public static string Node(string appId, string nodeId) => $"{App(appId)}/{Nodes}/{nodeId}";
 }
 

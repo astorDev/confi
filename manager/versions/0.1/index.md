@@ -1,5 +1,5 @@
-- [ ] Manager: App Versions Support
+- [x] Manager: App Versions Support
     - [x] Base support
     - [x] Unchanged schema verification
     - [x] `unversioned` support
-    - [ ] `latest` picked by `creationTime`
+    - [x] `latest` picked by `creationTime`
