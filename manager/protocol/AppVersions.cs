@@ -11,6 +11,10 @@ public partial class Uris
     public static string LatestAppVersion(string appId) => AppVersion(appId, Latest);
     public static string AppVersionConfiguration(string appId, string version) => $"{AppVersion(appId, version)}/{Configuration}";
     public static string AppLatestVersionConfiguration(string appId) => $"{LatestAppVersion(appId)}/{Configuration}";
+
+    public const string Unversioned = "unversioned";
+    public static string AppUnversionedVersion(string appId) => $"{Apps}/{appId}/{Versions}/{Unversioned}";
+    public static string AppUnversionedVersionConfiguration(string appId) => $"{AppUnversionedVersion(appId)}/{Configuration}";
 }
 
 public record AppVersionCandidate(
