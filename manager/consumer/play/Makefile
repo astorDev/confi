@@ -34,3 +34,13 @@ v-play:
 
 test:
 	dotnet test --filter FullyQualifiedName~Confi.Manager.Consumer.Playground.$(NAME) --logger "console;verbosity=detailed"
+
+log-debug:
+	curl -X PUT http://localhost:40398/apps/confi-play/versions/unversioned/configuration \
+		-H "Content-Type: application/json" \
+		-d '{ "Logging": { "LogLevel": { "Confi.JsonHttpConfiguration.Source": "Debug" }}}'
+
+log-info:
+	curl -X PUT http://localhost:40398/apps/confi-play/versions/unversioned/configuration \
+		-H "Content-Type: application/json" \
+		-d '{ "Logging": { "LogLevel": { "Confi.JsonHttpConfiguration.Source": "Information" }}}'
