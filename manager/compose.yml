@@ -2,7 +2,7 @@ name: confi-manager
 
 services:
   host:
-    image: confi-manager
+    image: vosarat/confi
     labels:
       - family=nist
     profiles: [ apps, all ]

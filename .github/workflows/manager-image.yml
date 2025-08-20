@@ -1,0 +1,17 @@
+on:
+  push:
+    paths:
+      - '.github/workflows/manager-image.yaml'
+      - 'manager/**'
+  workflow_dispatch:
+    
+jobs:
+  local-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/docker@main
+        with:
+          image: 'vosarat/confi'
+          build-context-path: 'manager/host'
+          dockerfile-path: 'Dockerfile'
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
