@@ -1,7 +1,7 @@
 on:
   push:
     paths:
-      - '.github/workflows/manager-image.yaml'
+      - '.github/workflows/manager-image.yml'
       - 'manager/**'
   workflow_dispatch:
     
