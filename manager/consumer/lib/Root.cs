@@ -57,7 +57,7 @@ public static class ConfiRegistrator
     )
     {
         var pullUri = connectionString.PullUriString(version);
-        return configuration.AddJsonHttp(pullUri, refreshInterval: refreshInterval ?? TimeSpan.FromSeconds(0.2));
+        return configuration.AddJsonHttp(pullUri, refreshInterval: refreshInterval ?? TimeSpan.FromSeconds(1));
     }
 }
 
@@ -96,12 +96,6 @@ public static class SelfDeclaration
             initialConfig
         );
     }
-
-    // public static JsonSchema SchemaFromFile(string filePath)
-    // {
-    //     var schemaString = File.ReadAllText(filePath);
-    //     return JsonSerializer.Deserialize<JsonSchema>(schemaString, JsonSerializerOptions.Web)!;
-    // }
 }
 
 public class ConfiSchema

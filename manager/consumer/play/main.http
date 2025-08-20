@@ -1,1 +1,26 @@
-/
+@confi = http://localhost:40398/apps/confi-play/versions/unversioned/configuration
+
+###
+GET {{ confi }}
+
+###
+PUT {{ confi }}
+
+{
+  "Logging": {
+    "LogLevel": {
+      "Confi.JsonHttpConfiguration.Source": "Debug"
+    }
+  }
+}
+
+###
+PUT {{ confi }}
+
+{
+  "Logging": {
+    "LogLevel": {
+      "Confi.JsonHttpConfiguration.Source": "Information"
+    }
+  }
+}

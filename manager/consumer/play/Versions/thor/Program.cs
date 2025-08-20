@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration["Nickname"] = "Thor Initial";
+
 builder.AddConfi("http://localhost:40398/thor", ConfiSchema.FromFile("thor.schema.json"));
 
 builder.Configuration.AddFluentEnvironmentVariables();
