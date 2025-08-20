@@ -1,14 +1,14 @@
-GET http://localhost:40398/apps/thor/configuration
+GET http://localhost:40398/apps/thor/versions/unversioned/configuration
 
 ###
-PUT http://localhost:40398/apps/thor/configuration
+PUT http://localhost:40398/apps/thor/versions/unversioned/configuration
 
 {
     "nickname" : "Tornado"
 }
 
 ###
-PUT http://localhost:40398/apps/thor/configuration
+PUT http://localhost:40398/apps/thor/versions/unversioned/configuration
 
 {
     "nickname" : "Toreodor"

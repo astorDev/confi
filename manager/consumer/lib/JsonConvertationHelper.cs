@@ -1,8 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Confi.Manager.Consumer;
+namespace Confi.Manager;
 
+// TO DO: Move to Json library
 public static class JsonConvertationHelper
 {
     public static JsonElement AsJsonElement(this JsonNode jsonNode)
