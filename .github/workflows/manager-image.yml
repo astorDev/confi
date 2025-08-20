@@ -13,6 +13,6 @@ jobs:
         with:
           image: 'vosarat/confi'
           build-context-path: 'manager/host'
-          dockerfile-path: 'Dockerfile'
+          dockerfile-path: 'manager/host/Dockerfile'
           docker-login: 'vosarat'
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
