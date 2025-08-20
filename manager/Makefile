@@ -6,6 +6,9 @@ prep:
 run:
 	dotnet run --project host
 
+consume:
+	dotnet run --project consumer/play
+
 down:
 	docker compose --profile all down
 	docker volume prune -f
@@ -16,6 +19,10 @@ reset:
 
 assemble:
 	docker compose --profile all up -d
+
+reassemble:
+	make down
+	make assemble
 
 build:
 	docker compose --profile all build
