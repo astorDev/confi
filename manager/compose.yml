@@ -2,7 +2,7 @@ name: confi-manager
 
 services:
   host:
-    image: vosarat/confi
+    image: vosarat/confi:2025.108.120.5-manager-jump-start
     labels:
       - family=nist
     profiles: [ apps, all ]
@@ -14,7 +14,7 @@ services:
       - PREFIX=${CONFI_MANAGER_PREFIX}
     ports:
       - "40398:8080"
-      
+
   db:
     image: mongo
     ports:
