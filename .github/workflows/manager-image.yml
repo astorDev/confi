@@ -12,7 +12,7 @@ jobs:
       - uses: astorDev/versy/calver/docker@main
         with:
           image: 'vosarat/confi'
-          build-context-path: 'manager/host'
+          build-context-path: 'manager'
           dockerfile-path: 'manager/host/Dockerfile'
           docker-login: 'vosarat'
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
