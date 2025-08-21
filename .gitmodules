@@ -1,3 +1,0 @@
-[submodule "manager/ui"]
-	path = manager/ui
-	url = https://github.com/astorDev/confi-manager-ui.git
