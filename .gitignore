@@ -4,5 +4,6 @@ obj/
 .DS_Store
 .env
 inbox.md
+*.inbox.md
 *.DotSettings
 buffer.*
