@@ -1,5 +1,5 @@
 TEST ?= main
-ARGS ?= -r --hero=Batman
+ARGS ?= -r --hero=Batman --verbose
 
 run:
 	dotnet run -- $(ARGS)

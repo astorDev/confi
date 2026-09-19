@@ -3,19 +3,19 @@ using Confi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var ready = new Option<bool>("--ready", "-r");
-var hero = new Option<string>("--hero");
+var readyFlag = new Option<bool?>("--ready", "-r");
+var heroOption = new Option<string>("--hero");
 
-var verbose = new Option<bool>("--verbose", "-v");
-var quiet = new Option<bool>("--quiet", "-q");
-var logLevel = new Option<string>("--log-level");
+var verboseFlag = new Option<bool?>("--verbose", "-v");
+var quietFlag = new Option<bool?>("--quiet", "-q");
+var logLevelOption = new Option<string>("--log-level");
 
-builder.Configuration.AddCli(args, 
-    CliConfig.Flag(ready, "Hero:Readiness", "on duty", "sleeping"),
-    CliConfig.Mirrored(hero, "Hero:Name"),
-    CliConfig.Flag(verbose, "Logging:LogLevel:Default", "Trace", "Information"),
-    CliConfig.Flag(quiet, "Logging:LogLevel:Default", "None", "Information"),
-    CliConfig.Mirrored(logLevel, "Logging:LogLevel:Default")
+builder.Configuration.AddCliOptions(args, 
+    readyFlag.Configuring("Hero:Readiness", "on duty", "sleeping"),
+    heroOption.Configuring("Hero:Name"),
+    verboseFlag.Configuring("Logging:LogLevel:Default", "Trace", "Information"),
+    quietFlag.Configuring("Logging:LogLevel:Default", "None", "Information"),
+    logLevelOption.Configuring("Logging:LogLevel:Default")
 );
 
 builder.Logging.AddSimpleConsole(c => c.SingleLine = true);
@@ -24,13 +24,15 @@ var app = builder.Build();
 
 app.Logger.LogTrace("Reading hero configuration....");
 
-var readiness = app.Configuration.GetRequiredValue("Hero:Readiness");
-var heroName = app.Configuration.GetRequiredValue("Hero:Name");
+var readiness = app.Configuration["Hero:Readiness"];
+var heroName = app.Configuration["Hero:Name"];
+var logLevelValue = app.Configuration.GetRequiredValue("Logging:LogLevel:Default");
 
-app.Logger.LogInformation("{hero} is {Readiness}", heroName, readiness);
+app.Logger.LogInformation("{hero} is {Readiness}. Log level is {LogLevel}", heroName, readiness, logLevelValue);
 
 app.MapGet("/", () => new {
     Message = "Hello World!"
 });
 
-app.Run();
+var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+await app.RunAsync(cts.Token);
