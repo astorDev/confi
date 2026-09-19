@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="clis/lib/Confi.Clis.csproj" />
+  <Project Path="clis/play/Confi.Clis.Playground.csproj" />
+</Solution>
