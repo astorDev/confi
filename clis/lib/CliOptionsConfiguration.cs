@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Confi;
 
-public static class CliConfiguration
+public static class CliOptionsConfiguration
 {
-    public record Source(string[] Args, params ICliConfigurationValueRule[] Rules) : IConfigurationSource
+    public record Source(string[] Args, params ICliOptionConfigurator[] Rules) : IConfigurationSource
     {
         public IConfigurationProvider Build(IConfigurationBuilder builder) => new Provider(this);
     }
@@ -15,7 +15,7 @@ public static class CliConfiguration
         public override void Load()
         {
             var parser = new Command("parser");
-            foreach (var rule in Source.Rules) parser.Add(rule.Argument);
+            foreach (var rule in Source.Rules) parser.Add(rule.Option);
 
             var parseResult = parser.Parse(Source.Args);
             foreach (var rule in Source.Rules)
@@ -29,5 +29,5 @@ public static class CliConfiguration
         }
     }
     
-    public static void AddCli(this IConfigurationBuilder builder, string[] args, params ICliConfigurationValueRule[] rules) => builder.Add(new Source(args, rules));
+    public static void AddCliOptions(this IConfigurationBuilder builder, string[] args, params ICliOptionConfigurator[] rules) => builder.Add(new Source(args, rules));
 }
